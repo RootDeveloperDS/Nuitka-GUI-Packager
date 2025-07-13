@@ -1,7 +1,7 @@
 # Nuitka-GUI-Packager - Nuitka GUI Packaging Tool
 ### Language
-* [中文](READMI_ZH.md)
-* [English](READMI.md)
+* [中文](README_ZH.md)
+* [English](README.md)
 
 ![Interface Screenshot](docs/images/sc_en.png)
 

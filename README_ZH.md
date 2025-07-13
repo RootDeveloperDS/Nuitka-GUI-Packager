@@ -1,8 +1,8 @@
 # Nuitka-GUI-Packager - Nuitka 图形化打包工具
 
 ### 语言
-* [中文](READMI_ZH.md)
-* [English](READMI.md)
+* [中文](README_ZH.md)
+* [English](README.md)
 
 ![界面截图](docs/images/screenshot_zh.png)
 
