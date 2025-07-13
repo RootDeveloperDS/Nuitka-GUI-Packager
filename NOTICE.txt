@@ -1,0 +1,3 @@
+## Third-Party Source Code
+- PySide6 source code: https://code.qt.io/cgit/pyside/pyside-setup.git/
+- Nuitka source code: https://github.com/Nuitka/Nuitka

@@ -19,3 +19,17 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+--------------------------------------------------------------------------------
+This software includes third-party components under separate licenses:
+1. PySide6 (Qt for Python) - Licensed under LGPL v3.0
+   Copyright (C) The Qt Company Ltd.
+   Full license: https://www.gnu.org/licenses/lgpl-3.0.html
+
+2. Nuitka - Licensed under Apache License 2.0
+   Copyright (C) Kay Hayen and Nuitka contributors
+   Full license: http://www.apache.org/licenses/LICENSE-2.0
+
+3. Python - Licensed under Python Software Foundation License (PSF)
+   Copyright (C) Python Software Foundation
+   Full license: https://docs.python.org/3/license.html

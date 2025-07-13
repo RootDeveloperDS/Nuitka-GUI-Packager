@@ -1,0 +1,7 @@
+nuitka==2.7.12
+ordered-set==4.1.0
+pyside6==6.9.1
+pyside6-addons==6.9.1
+pyside6-essentials==6.9.1
+shiboken6==6.9.1
+zstandard==0.23.0
