@@ -80,7 +80,7 @@
         .nav-links {
             display: flex;
             gap: 2rem;
-            align-items: center;
+            align-items: center; /* 垂直居中对齐链接和语言切换器 */
         }
         .nav-link {
             color: var(--text-secondary);
@@ -289,15 +289,13 @@
                 font-size: 2.5rem;
             }
             .nav-links {
-                 gap: 1rem; /* Reduce gap on mobile */
+                 gap: 1rem; /* 在小屏幕上减小间距 */
+                 /* 确保在非常小的屏幕上，语言切换器可以换行或调整 */
+                 flex-wrap: wrap;
+                 justify-content: center;
             }
             .section-title {
                 font-size: 2rem;
-            }
-            /* Ensure language switcher wraps or adjusts on very small screens if needed */
-            .language-switcher {
-                flex-wrap: wrap;
-                justify-content: center;
             }
         }
     </style>
@@ -326,7 +324,7 @@
         <div class="hero-content">
             <h1 data-i18n="project_name">Nuitka-GUI-Packager</h1>
             <p data-i18n="hero_description">一个基于 PySide6 开发的 Nuitka 图形化打包工具，简化 Python 应用程序的打包过程。</p>
-            <!-- Screenshot src will be updated by JS based on language -->
+            <!-- 截图 src 将由 JS 根据语言更新 -->
             <img id="screenshot-img" src="docs/images/screenshot_zh.png" alt="界面截图" class="screenshot" data-i18n-alt="screenshot_alt">
         </div>
     </section>
@@ -382,7 +380,7 @@
         </div>
         <div class="code-block">
             <span data-i18n="code_run_comment"># 运行程序</span><br>
-            python main_zh.py
+            <span data-i18n="run_command">python main_zh.py</span>
         </div>
         <a href="https://github.com/xiaoyingv/Nuitka-GUI-Packager" target="_blank" style="text-decoration: none;">
             <button class="cta-button" data-i18n="button_experience">立即体验</button>
@@ -437,7 +435,11 @@
     </section>
     <section class="license" id="license">
         <h2 class="section-title" data-i18n="license_title">许可证</h2>
-        <p data-i18n="license_desc">该项目遵循 <a href="https://opensource.org/licenses/MIT" style="color: var(--primary-green-light);" data-i18n="license_link">MIT License</a> 许可证。</p>
+        <p>
+            <span data-i18n="license_desc_prefix">该项目遵循 </span>
+            <a href="https://opensource.org/licenses/MIT" style="color: var(--primary-green-light);" data-i18n="license_link_text">MIT License</a>
+            <span data-i18n="license_desc_suffix"> 许可证。</span>
+        </p>
         <a href="https://github.com/xiaoyingv/Nuitka-GUI-Packager" target="_blank" style="text-decoration: none;">
             <button class="cta-button" data-i18n="button_source">查看源码</button>
         </a>
@@ -446,7 +448,7 @@
         <p data-i18n="footer_text">© 2025 Nuitka-GUI-Packager. 让 Python 打包变得更简单。</p>
     </footer>
     <script>
-        // Translation resources
+        // 翻译资源
         const resources = {
             en: {
                 translation: {
@@ -476,6 +478,7 @@
                     "code_pip_comment": "# Install dependencies (using pip)",
                     "code_uv_comment": "# Install dependencies (using uv)",
                     "code_run_comment": "# Run the program",
+                    "run_command": "python main.py", // 英文版运行命令
                     "button_experience": "Experience Now",
                     "workflow_title": "Packaging Workflow",
                     "step1_title": "Check Nuitka Installation",
@@ -491,8 +494,9 @@
                     "step6_title": "Configure Common Options",
                     "step6_desc": "Select common options in the tabs, e.g., whether to use standalone mode.",
                     "license_title": "License",
-                    "license_desc": "This project is licensed under the ",
-                    "license_link": "MIT License",
+                    "license_desc_prefix": "This project is licensed under the ",
+                    "license_link_text": "MIT License",
+                    "license_desc_suffix": ".",
                     "button_source": "View Source Code",
                     "footer_text": "© 2025 Nuitka-GUI-Packager. Making Python packaging easier."
                 }
@@ -525,6 +529,7 @@
                     "code_pip_comment": "# 安装依赖(使用pip)",
                     "code_uv_comment": "# 安装依赖(使用uv)",
                     "code_run_comment": "# 运行程序",
+                    "run_command": "python main_zh.py", // 中文版运行命令
                     "button_experience": "立即体验",
                     "workflow_title": "打包流程",
                     "step1_title": "检查 Nuitka 已安装",
@@ -540,53 +545,58 @@
                     "step6_title": "配置常用选项",
                     "step6_desc": "你可以在标签页中选择常用选项，例如：是否使用standalone模式打包",
                     "license_title": "许可证",
-                    "license_desc": "该项目遵循 ",
-                    "license_link": "MIT License",
+                    "license_desc_prefix": "该项目遵循 ",
+                    "license_link_text": "MIT License",
+                    "license_desc_suffix": " 许可证。",
                     "button_source": "查看源码",
                     "footer_text": "© 2025 Nuitka-GUI-Packager. 让 Python 打包变得更简单。"
                 }
             }
         };
 
-        // Map languages to screenshot paths
+        // 语言到截图路径的映射
         const screenshotPaths = {
             'zh': 'docs/images/screenshot_zh.png',
             'en': 'docs/images/sc_en.png'
         };
 
-        // Function to update page content based on current language
+        // 根据当前语言更新页面内容
         function updateContent() {
-            // Update text content
+            // 更新文本内容
             document.querySelectorAll('[data-i18n]').forEach(element => {
                 const key = element.getAttribute('data-i18n');
+                // 特殊处理图片的 alt 属性
                 if (element.tagName === 'IMG' && element.hasAttribute('data-i18n-alt')) {
                      const altKey = element.getAttribute('data-i18n-alt');
                      element.alt = i18next.t(altKey);
                 } else {
-                    element.textContent = i18next.t(key);
+                    // 避免覆盖包含其他元素（如链接）的父元素的内部HTML
+                    if (element.children.length === 0) {
+                        element.textContent = i18next.t(key);
+                    }
                 }
             });
 
-            // Update the page title
+            // 更新页面标题
             document.title = i18next.t('title');
 
-            // Update the screenshot image source and alt text
+            // 更新截图图片的 src 和 alt
             const screenshotImg = document.getElementById('screenshot-img');
             if (screenshotImg) {
-                screenshotImg.src = screenshotPaths[i18next.language] || screenshotPaths['zh']; // Fallback to zh
-                // Update alt text if data-i18n-alt is present
+                screenshotImg.src = screenshotPaths[i18next.language] || screenshotPaths['zh']; // 回退到中文
+                // 如果有 data-i18n-alt，则更新 alt 文本
                 if (screenshotImg.hasAttribute('data-i18n-alt')) {
                     const altKey = screenshotImg.getAttribute('data-i18n-alt');
                     screenshotImg.alt = i18next.t(altKey);
                 }
-                // Re-trigger the animation for the screenshot
+                // 重新触发动画以确保切换时有淡入效果
                 screenshotImg.style.animation = 'none';
                 setTimeout(() => {
                     screenshotImg.style.animation = 'fadeInUp 1s ease-out 1s forwards';
                 }, 10);
             }
 
-            // Update active language button
+            // 更新语言切换按钮的激活状态
             document.querySelectorAll('.lang-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.getAttribute('data-lang') === i18next.language) {
@@ -594,9 +604,9 @@
                 }
             });
 
-            // Re-initialize animations and scroll listeners after content update
+            // 内容更新后重新初始化动画和滚动监听
             setTimeout(() => {
-                // Re-run initial animations for hero section text
+                // 重新运行动画（针对英雄文本）
                 const heroText = document.querySelector('.hero p');
                 if (heroText) {
                     heroText.style.animation = 'none';
@@ -605,19 +615,19 @@
                     }, 10);
                 }
 
-                // Re-bind smooth scroll (in case new links were added, though unlikely)
+                // 重新绑定平滑滚动（以防万一）
                 smoothScroll();
 
-                // Re-run scroll animation check
+                // 重新检查滚动动画
                 animateOnScroll();
-            }, 100); // Small delay to ensure DOM is updated
+            }, 100); // 短暂延迟以确保 DOM 更新完成
         }
 
 
-        // Create particle effect
+        // 创建粒子效果
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
-            particlesContainer.innerHTML = ''; // Clear existing particles
+            particlesContainer.innerHTML = ''; // 清除现有粒子
             const particleCount = 50;
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
@@ -632,14 +642,14 @@
             }
         }
 
-        // Scroll animation
+        // 滚动动画
         function animateOnScroll() {
             const elements = document.querySelectorAll('.feature-card, .code-block, .step');
             const windowHeight = window.innerHeight;
             elements.forEach(element => {
                 const elementTop = element.getBoundingClientRect().top;
                 if (elementTop < windowHeight * 0.8) {
-                    // Ensure animation plays only once
+                    // 确保动画只播放一次
                     if (!element.style.animation || element.style.animation.includes('none')) {
                          element.style.animation = 'fadeInUp 0.8s ease-out forwards';
                     }
@@ -647,10 +657,9 @@
             });
         }
 
-        // Smooth scroll
+        // 平滑滚动
         function smoothScroll() {
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                // Remove existing listeners to avoid duplicates (though unlikely to be an issue here)
                 anchor.removeEventListener('click', handleScroll);
                 anchor.addEventListener('click', handleScroll);
             });
@@ -661,9 +670,9 @@
              const targetId = this.getAttribute('href');
              const target = document.querySelector(targetId);
              if (target) {
-                  // Adjust scroll offset for fixed header
+                  // 调整滚动偏移量以适应固定头部
                  const headerHeight = document.querySelector('.header').offsetHeight;
-                 const targetPosition = target.offsetTop - headerHeight - 10; // Add a little extra space
+                 const targetPosition = target.offsetTop - headerHeight - 10; // 添加一点额外空间
 
                  window.scrollTo({
                       top: targetPosition,
@@ -673,52 +682,52 @@
         }
 
 
-        // Initialize the application
+        // 初始化应用
         document.addEventListener('DOMContentLoaded', () => {
-            // Detect browser language or default to 'zh'
+            // 检测浏览器语言或默认为 'zh'
             const userLang = navigator.language || navigator.userLanguage;
             const initialLang = resources[userLang] ? userLang : (resources[userLang.split('-')[0]] ? userLang.split('-')[0] : 'zh');
 
-            // Initialize i18next
+            // 初始化 i18next
             i18next.init({
                 lng: initialLang,
-                fallbackLng: 'zh', // Default to Chinese if key not found
+                fallbackLng: 'zh', // 如果找不到键，则回退到中文
                 resources: resources,
                 interpolation: {
-                    escapeValue: false // React already safes from XSS
+                    escapeValue: false // React 已经处理了 XSS
                 }
             }).then(() => {
-                // Initial content update
+                // 初始内容更新
                 updateContent();
-                // Create initial particles
+                // 创建初始粒子
                 createParticles();
 
-                // Set up language switcher buttons
+                // 设置语言切换器按钮
                 document.querySelectorAll('.lang-btn').forEach(button => {
                     button.addEventListener('click', () => {
                         const lang = button.getAttribute('data-lang');
                         i18next.changeLanguage(lang).then(() => {
-                             updateContent(); // Update content after language change
-                             createParticles(); // Re-create particles for visual refresh
+                             updateContent(); // 语言更改后更新内容
+                             createParticles(); // 重新创建粒子以获得视觉刷新
                         }).catch(err => {
                              console.error('Error changing language:', err);
                         });
                     });
                 });
 
-                // Set initial active button state (already set in HTML, but good to confirm)
+                // 设置初始激活按钮状态（HTML中已设置，但再次确认）
                 document.querySelector(`.lang-btn[data-lang="${initialLang}"]`).classList.add('active');
 
-                // Set up smooth scrolling
+                // 设置平滑滚动
                 smoothScroll();
 
-                // Set up scroll listener for animations
+                // 设置滚动监听器以触发动画
                 window.addEventListener('scroll', animateOnScroll);
-                // Initial check for elements in view
+                // 初始检查视口中的元素
                 animateOnScroll();
             }).catch(err => {
                  console.error('Error initializing i18next:', err);
-                 // Fallback: show default (Chinese) content if i18next fails
+                 // 回退：如果 i18next 初始化失败，则显示默认（中文）内容
                  updateContent();
                  createParticles();
                  smoothScroll();
