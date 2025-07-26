@@ -1,11 +1,11 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuitka-GUI-Packager - Nuitka 图形化打包工具</title>
+    <title data-i18n="title">Nuitka-GUI-Packager - Nuitka 图形化打包工具</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/21.6.14/i18next.min.js"></script>
     <style>
         :root {
             --primary-green: #10b981;
@@ -18,13 +18,11 @@
             --text-primary: #f1f5f9;
             --text-secondary: #cbd5e1;
         }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, var(--dark-bg) 0%, #1e293b 100%);
@@ -32,7 +30,6 @@
             line-height: 1.6;
             overflow-x: hidden;
         }
-
         .particles {
             position: fixed;
             top: 0;
@@ -42,7 +39,6 @@
             z-index: -1;
             pointer-events: none;
         }
-
         .particle {
             position: absolute;
             background: var(--primary-green);
@@ -50,12 +46,10 @@
             opacity: 0.6;
             animation: float 6s ease-in-out infinite;
         }
-
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
             50% { transform: translateY(-20px) rotate(180deg); }
         }
-
         .header {
             background: rgba(15, 23, 42, 0.8);
             backdrop-filter: blur(10px);
@@ -66,7 +60,6 @@
             z-index: 1000;
             border-bottom: 1px solid rgba(16, 185, 129, 0.2);
         }
-
         .nav {
             display: flex;
             justify-content: space-between;
@@ -74,7 +67,6 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-
         .logo {
             font-size: 1.5rem;
             font-weight: 700;
@@ -85,22 +77,38 @@
             align-items: center;
             gap: 0.5rem;
         }
-
         .nav-links {
             display: flex;
             gap: 2rem;
+            align-items: center;
         }
-
         .nav-link {
             color: var(--text-secondary);
             text-decoration: none;
             transition: all 0.3s ease;
             font-weight: 500;
         }
-
         .nav-link:hover {
             color: var(--primary-green);
             transform: translateY(-2px);
+        }
+        .language-switcher {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .lang-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 4px;
+            padding: 0.25rem 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .lang-btn:hover, .lang-btn.active {
+            color: var(--primary-green);
+            border-color: var(--primary-green);
         }
 
         .hero {
@@ -112,13 +120,11 @@
             position: relative;
             overflow: hidden;
         }
-
         .hero-content {
             text-align: center;
             max-width: 800px;
             z-index: 2;
         }
-
         .hero h1 {
             font-size: 3.5rem;
             font-weight: 800;
@@ -128,12 +134,10 @@
             -webkit-text-fill-color: transparent;
             animation: glow 2s ease-in-out infinite alternate;
         }
-
         @keyframes glow {
             from { text-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
             to { text-shadow: 0 0 20px rgba(16, 185, 129, 0.8), 0 0 30px rgba(16, 185, 129, 0.6); }
         }
-
         .hero p {
             font-size: 1.25rem;
             color: var(--text-secondary);
@@ -141,7 +145,6 @@
             opacity: 0;
             animation: fadeInUp 1s ease-out 0.5s forwards;
         }
-
         .screenshot {
             width: 100%;
             max-width: 800px;
@@ -153,12 +156,10 @@
             animation: fadeInUp 1s ease-out 1s forwards;
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
-
         .features {
             padding: 6rem 2rem;
             background: rgba(30, 41, 59, 0.5);
         }
-
         .section-title {
             text-align: center;
             font-size: 2.5rem;
@@ -167,7 +168,6 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
         .features-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -175,7 +175,6 @@
             max-width: 1200px;
             margin: 0 auto;
         }
-
         .feature-card {
             background: rgba(30, 41, 59, 0.7);
             border-radius: 12px;
@@ -185,30 +184,25 @@
             opacity: 0;
             transform: translateY(30px);
         }
-
         .feature-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
             border-color: rgba(16, 185, 129, 0.5);
         }
-
         .feature-icon {
             font-size: 2.5rem;
             margin-bottom: 1rem;
             color: var(--primary-green);
         }
-
         .feature-title {
             font-size: 1.25rem;
             font-weight: 600;
             margin-bottom: 1rem;
         }
-
         .installation {
             padding: 6rem 2rem;
             text-align: center;
         }
-
         .code-block {
             background: rgba(15, 23, 42, 0.8);
             border-radius: 8px;
@@ -224,17 +218,14 @@
             opacity: 0;
             transform: translateY(30px);
         }
-
         .workflow {
             padding: 6rem 2rem;
             background: rgba(30, 41, 59, 0.5);
         }
-
         .steps {
             max-width: 800px;
             margin: 0 auto;
         }
-
         .step {
             display: flex;
             align-items: flex-start;
@@ -242,7 +233,6 @@
             opacity: 0;
             transform: translateX(-30px);
         }
-
         .step-number {
             background: var(--primary-green);
             color: white;
@@ -257,17 +247,14 @@
             flex-shrink: 0;
             margin-top: 0.25rem;
         }
-
         .step-content h3 {
             margin-bottom: 0.5rem;
             color: var(--primary-green-light);
         }
-
         .license {
             padding: 6rem 2rem;
             text-align: center;
         }
-
         .cta-button {
             background: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark));
             color: white;
@@ -281,258 +268,463 @@
             margin: 1rem 0;
             box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
         }
-
         .cta-button:hover {
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(16, 185, 129, 0.4);
         }
-
         .footer {
             background: rgba(15, 23, 42, 0.9);
             padding: 3rem 2rem;
             text-align: center;
             border-top: 1px solid rgba(16, 185, 129, 0.2);
         }
-
         @keyframes fadeInUp {
             to {
                 opacity: 1;
                 transform: translateY(0) translateX(0);
             }
         }
-
         @media (max-width: 768px) {
             .hero h1 {
                 font-size: 2.5rem;
             }
-            
             .nav-links {
-                display: none;
+                 gap: 1rem; /* Reduce gap on mobile */
             }
-            
             .section-title {
                 font-size: 2rem;
+            }
+            /* Ensure language switcher wraps or adjusts on very small screens if needed */
+            .language-switcher {
+                flex-wrap: wrap;
+                justify-content: center;
             }
         }
     </style>
 </head>
 <body>
     <div class="particles" id="particles"></div>
-    
     <header class="header">
         <nav class="nav">
             <div class="logo">
                 <span>🐍</span>
-                Nuitka-GUI-Packager
+                <span data-i18n="project_name">Nuitka-GUI-Packager</span>
             </div>
             <div class="nav-links">
-                <a href="#features" class="nav-link">功能特性</a>
-                <a href="#installation" class="nav-link">安装使用</a>
-                <a href="#workflow" class="nav-link">打包流程</a>
-                <a href="#license" class="nav-link">许可证</a>
+                <a href="#features" class="nav-link" data-i18n="nav_features">功能特性</a>
+                <a href="#installation" class="nav-link" data-i18n="nav_installation">安装使用</a>
+                <a href="#workflow" class="nav-link" data-i18n="nav_workflow">打包流程</a>
+                <a href="#license" class="nav-link" data-i18n="nav_license">许可证</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="zh">CN</button>
+                    <button class="lang-btn" data-lang="en">EN</button>
+                </div>
             </div>
         </nav>
     </header>
-
     <section class="hero">
         <div class="hero-content">
-            <h1>Nuitka-GUI-Packager</h1>
-            <p>一个基于 PySide6 开发的 Nuitka 图形化打包工具，简化 Python 应用程序的打包过程。</p>
-            <img src="docs/images/screenshot_zh.png?text=GUI+Interface+Screenshot" alt="界面截图" class="screenshot">
+            <h1 data-i18n="project_name">Nuitka-GUI-Packager</h1>
+            <p data-i18n="hero_description">一个基于 PySide6 开发的 Nuitka 图形化打包工具，简化 Python 应用程序的打包过程。</p>
+            <!-- Screenshot src will be updated by JS based on language -->
+            <img id="screenshot-img" src="docs/images/screenshot_zh.png" alt="界面截图" class="screenshot" data-i18n-alt="screenshot_alt">
         </div>
     </section>
-
     <section class="features" id="features">
-        <h2 class="section-title">主要功能</h2>
+        <h2 class="section-title" data-i18n="features_title">主要功能</h2>
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">👁️</div>
-                <h3 class="feature-title">可视化配置</h3>
-                <p>通过直观的界面配置 Nuitka 打包参数</p>
+                <h3 class="feature-title" data-i18n="feature_visual_title">可视化配置</h3>
+                <p data-i18n="feature_visual_desc">通过直观的界面配置 Nuitka 打包参数</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📋</div>
-                <h3 class="feature-title">多标签页管理</h3>
-                <p>将复杂参数分类组织在 8 个标签页中</p>
+                <h3 class="feature-title" data-i18n="feature_tabs_title">多标签页管理</h3>
+                <p data-i18n="feature_tabs_desc">将复杂参数分类组织在 8 个标签页中</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">⚡</div>
-                <h3 class="feature-title">实时命令生成</h3>
-                <p>根据用户选择自动生成 Nuitka 命令</p>
+                <h3 class="feature-title" data-i18n="feature_command_title">实时命令生成</h3>
+                <p data-i18n="feature_command_desc">根据用户选择自动生成 Nuitka 命令</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <h3 class="feature-title">打包过程监控</h3>
-                <p>实时显示打包日志和进度</p>
+                <h3 class="feature-title" data-i18n="feature_monitor_title">打包过程监控</h3>
+                <p data-i18n="feature_monitor_desc">实时显示打包日志和进度</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">⚙️</div>
-                <h3 class="feature-title">常用预设</h3>
-                <p>内置常用选项的一键配置</p>
+                <h3 class="feature-title" data-i18n="feature_presets_title">常用预设</h3>
+                <p data-i18n="feature_presets_desc">内置常用选项的一键配置</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🔌</div>
-                <h3 class="feature-title">插件支持</h3>
-                <p>支持 PySide6, Tkinter 等常用插件</p>
+                <h3 class="feature-title" data-i18n="feature_plugins_title">插件支持</h3>
+                <p data-i18n="feature_plugins_desc">支持 PySide6, Tkinter 等常用插件</p>
             </div>
         </div>
     </section>
-
     <section class="installation" id="installation">
-        <h2 class="section-title">使用说明</h2>
+        <h2 class="section-title" data-i18n="installation_title">使用说明</h2>
         <div class="code-block">
-            # 克隆仓库<br>
+            <span data-i18n="code_clone_comment"># 克隆仓库</span><br>
             git clone https://github.com/xiaoyingv/Nuitka-GUI-Packager.git<br>
             cd Nuitka-GUI-Packager
         </div>
         <div class="code-block">
-            # 安装依赖(使用pip)<br>
+            <span data-i18n="code_pip_comment"># 安装依赖(使用pip)</span><br>
             pip install -r requirements.txt
         </div>
         <div class="code-block">
-            # 安装依赖(使用uv)<br>
+            <span data-i18n="code_uv_comment"># 安装依赖(使用uv)</span><br>
             uv pip install -r requirements.txt
         </div>
         <div class="code-block">
-            # 运行程序<br>
+            <span data-i18n="code_run_comment"># 运行程序</span><br>
             python main_zh.py
         </div>
         <a href="https://github.com/xiaoyingv/Nuitka-GUI-Packager" target="_blank" style="text-decoration: none;">
-            <button class="cta-button">立即体验</button>
+            <button class="cta-button" data-i18n="button_experience">立即体验</button>
         </a>
     </section>
-
     <section class="workflow" id="workflow">
-        <h2 class="section-title">打包流程</h2>
+        <h2 class="section-title" data-i18n="workflow_title">打包流程</h2>
         <div class="steps">
             <div class="step">
                 <div class="step-number">1</div>
                 <div class="step-content">
-                    <h3>检查 Nuitka 已安装</h3>
-                    <p>请确保选择的环境 Nuitka 已经安装到运行环境。</p>
+                    <h3 data-i18n="step1_title">检查 Nuitka 已安装</h3>
+                    <p data-i18n="step1_desc">请确保选择的环境 Nuitka 已经安装到运行环境。</p>
                 </div>
             </div>
             <div class="step">
                 <div class="step-number">2</div>
                 <div class="step-content">
-                    <h3>选择 Python 解释器</h3>
-                    <p>选择要打包文件python环境中的python解释器</p>
+                    <h3 data-i18n="step2_title">选择 Python 解释器</h3>
+                    <p data-i18n="step2_desc">选择要打包文件python环境中的python解释器</p>
                 </div>
             </div>
             <div class="step">
                 <div class="step-number">3</div>
                 <div class="step-content">
-                    <h3>选择主文件</h3>
-                    <p>选择主文件选择要打包的程序文件入口文件</p>
+                    <h3 data-i18n="step3_title">选择主文件</h3>
+                    <p data-i18n="step3_desc">选择主文件选择要打包的程序文件入口文件</p>
                 </div>
             </div>
             <div class="step">
                 <div class="step-number">4</div>
                 <div class="step-content">
-                    <h3>选择图标文件(可选)</h3>
-                    <p>选择图标文件，例如：C:\Users\myapp\icon.ico</p>
+                    <h3 data-i18n="step4_title">选择图标文件(可选)</h3>
+                    <p data-i18n="step4_desc">选择图标文件，例如：C:\Users\myapp\icon.ico</p>
                 </div>
             </div>
             <div class="step">
                 <div class="step-number">5</div>
                 <div class="step-content">
-                    <h3>选择输出目录</h3>
-                    <p>选择输出目录将保存打包后的可执行文件</p>
+                    <h3 data-i18n="step5_title">选择输出目录</h3>
+                    <p data-i18n="step5_desc">选择输出目录将保存打包后的可执行文件</p>
                 </div>
             </div>
             <div class="step">
                 <div class="step-number">6</div>
                 <div class="step-content">
-                    <h3>配置常用选项</h3>
-                    <p>你可以在标签页中选择常用选项，例如：是否使用standalone模式打包</p>
+                    <h3 data-i18n="step6_title">配置常用选项</h3>
+                    <p data-i18n="step6_desc">你可以在标签页中选择常用选项，例如：是否使用standalone模式打包</p>
                 </div>
             </div>
         </div>
     </section>
-
     <section class="license" id="license">
-        <h2 class="section-title">许可证</h2>
-        <p>该项目遵循 <a href="https://opensource.org/licenses/MIT" style="color: var(--primary-green-light);">MIT License</a> 许可证。</p>
+        <h2 class="section-title" data-i18n="license_title">许可证</h2>
+        <p data-i18n="license_desc">该项目遵循 <a href="https://opensource.org/licenses/MIT" style="color: var(--primary-green-light);" data-i18n="license_link">MIT License</a> 许可证。</p>
         <a href="https://github.com/xiaoyingv/Nuitka-GUI-Packager" target="_blank" style="text-decoration: none;">
-            <button class="cta-button">查看源码</button>
+            <button class="cta-button" data-i18n="button_source">查看源码</button>
         </a>
-
     </section>
-
     <footer class="footer">
-        <p>© 2025 Nuitka-GUI-Packager. 让 Python 打包变得更简单。</p>
+        <p data-i18n="footer_text">© 2025 Nuitka-GUI-Packager. 让 Python 打包变得更简单。</p>
     </footer>
-
     <script>
-        // 创建粒子效果
+        // Translation resources
+        const resources = {
+            en: {
+                translation: {
+                    "title": "Nuitka-GUI-Packager - Nuitka Graphical Packaging Tool",
+                    "project_name": "Nuitka-GUI-Packager",
+                    "hero_description": "A graphical packaging tool for Nuitka based on PySide6, simplifying the process of packaging Python applications.",
+                    "screenshot_alt": "GUI Interface Screenshot",
+                    "nav_features": "Features",
+                    "nav_installation": "Installation",
+                    "nav_workflow": "Workflow",
+                    "nav_license": "License",
+                    "features_title": "Key Features",
+                    "feature_visual_title": "Visual Configuration",
+                    "feature_visual_desc": "Configure Nuitka packaging parameters through an intuitive interface.",
+                    "feature_tabs_title": "Multi-Tab Management",
+                    "feature_tabs_desc": "Organize complex parameters across 8 tabs.",
+                    "feature_command_title": "Real-time Command Generation",
+                    "feature_command_desc": "Automatically generates Nuitka commands based on user selections.",
+                    "feature_monitor_title": "Packaging Process Monitoring",
+                    "feature_monitor_desc": "Displays packaging logs and progress in real-time.",
+                    "feature_presets_title": "Common Presets",
+                    "feature_presets_desc": "Built-in one-click configuration for common options.",
+                    "feature_plugins_title": "Plugin Support",
+                    "feature_plugins_desc": "Supports plugins like PySide6, Tkinter, etc.",
+                    "installation_title": "Installation & Usage",
+                    "code_clone_comment": "# Clone the repository",
+                    "code_pip_comment": "# Install dependencies (using pip)",
+                    "code_uv_comment": "# Install dependencies (using uv)",
+                    "code_run_comment": "# Run the program",
+                    "button_experience": "Experience Now",
+                    "workflow_title": "Packaging Workflow",
+                    "step1_title": "Check Nuitka Installation",
+                    "step1_desc": "Ensure Nuitka is installed in the selected Python environment.",
+                    "step2_title": "Select Python Interpreter",
+                    "step2_desc": "Choose the Python interpreter from the environment of the file to be packaged.",
+                    "step3_title": "Select Main File",
+                    "step3_desc": "Choose the main entry point file of the program to be packaged.",
+                    "step4_title": "Select Icon File (Optional)",
+                    "step4_desc": "Choose an icon file, e.g., C:\\Users\\myapp\\icon.ico",
+                    "step5_title": "Select Output Directory",
+                    "step5_desc": "Choose the directory where the packaged executable will be saved.",
+                    "step6_title": "Configure Common Options",
+                    "step6_desc": "Select common options in the tabs, e.g., whether to use standalone mode.",
+                    "license_title": "License",
+                    "license_desc": "This project is licensed under the ",
+                    "license_link": "MIT License",
+                    "button_source": "View Source Code",
+                    "footer_text": "© 2025 Nuitka-GUI-Packager. Making Python packaging easier."
+                }
+            },
+            zh: {
+                translation: {
+                    "title": "Nuitka-GUI-Packager - Nuitka 图形化打包工具",
+                    "project_name": "Nuitka-GUI-Packager",
+                    "hero_description": "一个基于 PySide6 开发的 Nuitka 图形化打包工具，简化 Python 应用程序的打包过程。",
+                    "screenshot_alt": "界面截图",
+                    "nav_features": "功能特性",
+                    "nav_installation": "安装使用",
+                    "nav_workflow": "打包流程",
+                    "nav_license": "许可证",
+                    "features_title": "主要功能",
+                    "feature_visual_title": "可视化配置",
+                    "feature_visual_desc": "通过直观的界面配置 Nuitka 打包参数",
+                    "feature_tabs_title": "多标签页管理",
+                    "feature_tabs_desc": "将复杂参数分类组织在 8 个标签页中",
+                    "feature_command_title": "实时命令生成",
+                    "feature_command_desc": "根据用户选择自动生成 Nuitka 命令",
+                    "feature_monitor_title": "打包过程监控",
+                    "feature_monitor_desc": "实时显示打包日志和进度",
+                    "feature_presets_title": "常用预设",
+                    "feature_presets_desc": "内置常用选项的一键配置",
+                    "feature_plugins_title": "插件支持",
+                    "feature_plugins_desc": "支持 PySide6, Tkinter 等常用插件",
+                    "installation_title": "使用说明",
+                    "code_clone_comment": "# 克隆仓库",
+                    "code_pip_comment": "# 安装依赖(使用pip)",
+                    "code_uv_comment": "# 安装依赖(使用uv)",
+                    "code_run_comment": "# 运行程序",
+                    "button_experience": "立即体验",
+                    "workflow_title": "打包流程",
+                    "step1_title": "检查 Nuitka 已安装",
+                    "step1_desc": "请确保选择的环境 Nuitka 已经安装到运行环境。",
+                    "step2_title": "选择 Python 解释器",
+                    "step2_desc": "选择要打包文件python环境中的python解释器",
+                    "step3_title": "选择主文件",
+                    "step3_desc": "选择主文件选择要打包的程序文件入口文件",
+                    "step4_title": "选择图标文件(可选)",
+                    "step4_desc": "选择图标文件，例如：C:\\Users\\myapp\\icon.ico",
+                    "step5_title": "选择输出目录",
+                    "step5_desc": "选择输出目录将保存打包后的可执行文件",
+                    "step6_title": "配置常用选项",
+                    "step6_desc": "你可以在标签页中选择常用选项，例如：是否使用standalone模式打包",
+                    "license_title": "许可证",
+                    "license_desc": "该项目遵循 ",
+                    "license_link": "MIT License",
+                    "button_source": "查看源码",
+                    "footer_text": "© 2025 Nuitka-GUI-Packager. 让 Python 打包变得更简单。"
+                }
+            }
+        };
+
+        // Map languages to screenshot paths
+        const screenshotPaths = {
+            'zh': 'docs/images/screenshot_zh.png',
+            'en': 'docs/images/sc_en.png'
+        };
+
+        // Function to update page content based on current language
+        function updateContent() {
+            // Update text content
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (element.tagName === 'IMG' && element.hasAttribute('data-i18n-alt')) {
+                     const altKey = element.getAttribute('data-i18n-alt');
+                     element.alt = i18next.t(altKey);
+                } else {
+                    element.textContent = i18next.t(key);
+                }
+            });
+
+            // Update the page title
+            document.title = i18next.t('title');
+
+            // Update the screenshot image source and alt text
+            const screenshotImg = document.getElementById('screenshot-img');
+            if (screenshotImg) {
+                screenshotImg.src = screenshotPaths[i18next.language] || screenshotPaths['zh']; // Fallback to zh
+                // Update alt text if data-i18n-alt is present
+                if (screenshotImg.hasAttribute('data-i18n-alt')) {
+                    const altKey = screenshotImg.getAttribute('data-i18n-alt');
+                    screenshotImg.alt = i18next.t(altKey);
+                }
+                // Re-trigger the animation for the screenshot
+                screenshotImg.style.animation = 'none';
+                setTimeout(() => {
+                    screenshotImg.style.animation = 'fadeInUp 1s ease-out 1s forwards';
+                }, 10);
+            }
+
+            // Update active language button
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-lang') === i18next.language) {
+                    btn.classList.add('active');
+                }
+            });
+
+            // Re-initialize animations and scroll listeners after content update
+            setTimeout(() => {
+                // Re-run initial animations for hero section text
+                const heroText = document.querySelector('.hero p');
+                if (heroText) {
+                    heroText.style.animation = 'none';
+                    setTimeout(() => {
+                        heroText.style.animation = 'fadeInUp 1s ease-out 0.5s forwards';
+                    }, 10);
+                }
+
+                // Re-bind smooth scroll (in case new links were added, though unlikely)
+                smoothScroll();
+
+                // Re-run scroll animation check
+                animateOnScroll();
+            }, 100); // Small delay to ensure DOM is updated
+        }
+
+
+        // Create particle effect
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
+            particlesContainer.innerHTML = ''; // Clear existing particles
             const particleCount = 50;
-            
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                
-                // 随机大小
                 const size = Math.random() * 4 + 1;
                 particle.style.width = `${size}px`;
                 particle.style.height = `${size}px`;
-                
-                // 随机位置
                 particle.style.left = `${Math.random() * 100}%`;
                 particle.style.top = `${Math.random() * 100}%`;
-                
-                // 随机动画延迟
                 particle.style.animationDelay = `${Math.random() * 6}s`;
-                
                 particlesContainer.appendChild(particle);
             }
         }
 
-        // 滚动动画
+        // Scroll animation
         function animateOnScroll() {
             const elements = document.querySelectorAll('.feature-card, .code-block, .step');
             const windowHeight = window.innerHeight;
-            
             elements.forEach(element => {
                 const elementTop = element.getBoundingClientRect().top;
                 if (elementTop < windowHeight * 0.8) {
-                    element.style.animation = 'fadeInUp 0.8s ease-out forwards';
+                    // Ensure animation plays only once
+                    if (!element.style.animation || element.style.animation.includes('none')) {
+                         element.style.animation = 'fadeInUp 0.8s ease-out forwards';
+                    }
                 }
             });
         }
 
-        // 平滑滚动
+        // Smooth scroll
         function smoothScroll() {
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        window.scrollTo({
-                            top: target.offsetTop - 80,
-                            behavior: 'smooth'
-                        });
-                    }
-                });
+                // Remove existing listeners to avoid duplicates (though unlikely to be an issue here)
+                anchor.removeEventListener('click', handleScroll);
+                anchor.addEventListener('click', handleScroll);
             });
         }
 
-        // 初始化
+        function handleScroll(e) {
+             e.preventDefault();
+             const targetId = this.getAttribute('href');
+             const target = document.querySelector(targetId);
+             if (target) {
+                  // Adjust scroll offset for fixed header
+                 const headerHeight = document.querySelector('.header').offsetHeight;
+                 const targetPosition = target.offsetTop - headerHeight - 10; // Add a little extra space
+
+                 window.scrollTo({
+                      top: targetPosition,
+                      behavior: 'smooth'
+                 });
+             }
+        }
+
+
+        // Initialize the application
         document.addEventListener('DOMContentLoaded', () => {
-            createParticles();
-            smoothScroll();
-            
-            // 初始动画
-            setTimeout(() => {
-                document.querySelector('.hero p').style.animation = 'fadeInUp 1s ease-out forwards';
-                document.querySelector('.screenshot').style.animation = 'fadeInUp 1s ease-out 1s forwards';
-            }, 500);
-            
-            // 滚动监听
-            window.addEventListener('scroll', animateOnScroll);
-            // 初始检查
-            animateOnScroll();
+            // Detect browser language or default to 'zh'
+            const userLang = navigator.language || navigator.userLanguage;
+            const initialLang = resources[userLang] ? userLang : (resources[userLang.split('-')[0]] ? userLang.split('-')[0] : 'zh');
+
+            // Initialize i18next
+            i18next.init({
+                lng: initialLang,
+                fallbackLng: 'zh', // Default to Chinese if key not found
+                resources: resources,
+                interpolation: {
+                    escapeValue: false // React already safes from XSS
+                }
+            }).then(() => {
+                // Initial content update
+                updateContent();
+                // Create initial particles
+                createParticles();
+
+                // Set up language switcher buttons
+                document.querySelectorAll('.lang-btn').forEach(button => {
+                    button.addEventListener('click', () => {
+                        const lang = button.getAttribute('data-lang');
+                        i18next.changeLanguage(lang).then(() => {
+                             updateContent(); // Update content after language change
+                             createParticles(); // Re-create particles for visual refresh
+                        }).catch(err => {
+                             console.error('Error changing language:', err);
+                        });
+                    });
+                });
+
+                // Set initial active button state (already set in HTML, but good to confirm)
+                document.querySelector(`.lang-btn[data-lang="${initialLang}"]`).classList.add('active');
+
+                // Set up smooth scrolling
+                smoothScroll();
+
+                // Set up scroll listener for animations
+                window.addEventListener('scroll', animateOnScroll);
+                // Initial check for elements in view
+                animateOnScroll();
+            }).catch(err => {
+                 console.error('Error initializing i18next:', err);
+                 // Fallback: show default (Chinese) content if i18next fails
+                 updateContent();
+                 createParticles();
+                 smoothScroll();
+                 window.addEventListener('scroll', animateOnScroll);
+                 animateOnScroll();
+            });
         });
     </script>
 </body>
