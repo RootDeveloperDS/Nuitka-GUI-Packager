@@ -27,6 +27,7 @@ class PackageThread(QThread):
         self.command = command
         self.running = True
         self.process = None  # Reference to subprocess
+        
 
     def run(self):
         """Execute packaging command and capture output"""
@@ -83,6 +84,11 @@ class NuitkaPackager(QMainWindow):
         # Set window icon
         self.setWindowIcon(QIcon("../icons/382_128x128.ico"))  # Replace with your icon path
 
+
+        # Apply stylesheet directly on QMainWindow
+        
+
+
         # Initialize UI
         self.init_ui()
 
@@ -96,7 +102,17 @@ class NuitkaPackager(QMainWindow):
 
         # Apply styling
         self.set_style()
-
+        self.setStyleSheet("""
+            QMainWindow {
+                background: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 1,
+                    stop: 0 #0d0d0f,
+                    stop: 0.4 #1a1a1f,
+                    stop: 0.7 #0f1f2f,
+                    stop: 1 #0d0d0f
+                );
+            }
+        """)
         # Update command display
         self.update_command()
 

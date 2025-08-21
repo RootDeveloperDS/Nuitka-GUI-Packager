@@ -96,6 +96,17 @@ class NuitkaPackager(QMainWindow):
 
         # 设置样式
         self.set_style()
+        self.setStyleSheet("""
+            QMainWindow {
+                background: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 1,
+                    stop: 0 #0d0d0f,
+                    stop: 0.4 #1a1a1f,
+                    stop: 0.7 #0f1f2f,
+                    stop: 1 #0d0d0f
+                );
+            }
+        """)
 
         # 更新命令
         self.update_command()
