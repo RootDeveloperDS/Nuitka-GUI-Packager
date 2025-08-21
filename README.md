@@ -3,7 +3,9 @@
 * [中文](README_ZH.md)
 * [English](README.md)
 
-![Interface Screenshot](docs/images/sc_en.png)
+![Interface Screenshot](docs/images/sc_enL.png)
+
+![Interface Screenshot](docs/images/sc_enD.png)
 
 A GUI packaging tool for Nuitka based on PySide6, simplifying the packaging process for Python applications.
 
@@ -16,7 +18,6 @@ A GUI packaging tool for Nuitka based on PySide6, simplifying the packaging proc
 ✅ **Common Presets** - One-click configuration for frequently used options  
 ✅ **Plugin Support** - Supports common plugins like PySide6, Tkinter, etc.  
 ✅ **Metadata Settings** - Set executable file metadata like version information  
-✅ **Safe Termination** - Supports stopping packaging processes midway  
 
 ## Usage
 

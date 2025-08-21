@@ -99,10 +99,13 @@ class NuitkaPackager(QMainWindow):
         self.output_dir = ""
         self.package_thread = None
         self.plugins = []
+        
+        self.is_dark_theme = False  # Default to light theme
+
 
         # Apply styling
         self.set_style()
-        self.setStyleSheet("""
+        '''self.setStyleSheet("""
             QMainWindow {
                 background: qlineargradient(
                     x1: 0, y1: 0, x2: 1, y2: 1,
@@ -112,7 +115,7 @@ class NuitkaPackager(QMainWindow):
                     stop: 1 #0d0d0f
                 );
             }
-        """)
+        """)'''
         # Update command display
         self.update_command()
 
@@ -760,6 +763,19 @@ class NuitkaPackager(QMainWindow):
         self.progress_bar.setFixedHeight(10)
         main_layout.addWidget(self.progress_bar)
 
+        # Theme toggle button
+        theme_layout = QHBoxLayout()
+        self.theme_toggle_btn = QPushButton("🌙 Dark Theme")
+        self.theme_toggle_btn.setFixedHeight(30)
+        self.theme_toggle_btn.setFixedWidth(120)
+        self.theme_toggle_btn.clicked.connect(self.toggle_theme)
+        theme_layout.addWidget(self.theme_toggle_btn)
+        theme_layout.addStretch()
+        main_layout.addLayout(theme_layout)
+
+        
+        self.is_dark_theme = True  # Start with dark 
+
         # Button area
         button_layout = QHBoxLayout()
 
@@ -813,6 +829,22 @@ class NuitkaPackager(QMainWindow):
         # Status bar
         self.status_bar = self.statusBar()
         self.status_bar.showMessage("Ready - Configure packaging options")
+    def toggle_theme(self):
+        """Toggle between dark and light themes"""
+        self.is_dark_theme = not self.is_dark_theme
+        
+        # Update button text and icon
+        if self.is_dark_theme:
+            self.theme_toggle_btn.setText("🌙 Dark Theme")
+        else:
+            self.theme_toggle_btn.setText("☀️ Light Theme")
+        
+        # Apply the new theme
+        self.set_style()
+        
+        # Log the theme change
+        theme_name = "Dark" if self.is_dark_theme else "Light"
+        self.log_message(f"🎨 Switched to {theme_name} theme")
 
     def add_python_flag(self):
         """Add Python flag to list"""
@@ -843,8 +875,129 @@ class NuitkaPackager(QMainWindow):
         return False
 
     def set_style(self):
-        """Set application styling"""
-        self.setStyleSheet("""
+        """Seted application styling based on theme"""
+        if self.is_dark_theme:
+            # Dark Theme
+            main_bg = """
+            QMainWindow {
+                background: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 1,
+                    stop: 0 #0d0d0f,
+                    stop: 0.4 #1a1a1f,
+                    stop: 0.7 #0f1f2f,
+                    stop: 1 #0d0d0f
+                );
+            }
+            """
+            
+            style = """
+            QMainWindow {
+                background-color: #2b2b2b;
+            }
+            QGroupBox {
+                font-weight: bold;
+                border: 1px solid #555;
+                border-radius: 8px;
+                margin-top: 1.5em;
+                background-color: #333;
+                color: #ffffff;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px;
+                background-color: transparent;
+                color: #ffffff;
+            }
+            QTextEdit {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: #ffffff;
+            }
+            QLineEdit, QComboBox, QListWidget {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: #ffffff;
+            }
+            QLineEdit:disabled, QTextEdit:disabled {
+                background-color: #444;
+                color: #888;
+            }
+            QPushButton {
+                background-color: #3498db;
+                color: white;
+                padding: 6px 12px;
+                border: none;
+                border-radius: 4px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+            QPushButton:disabled {
+                background-color: #666;
+            }
+            QLabel {
+                color: #ffffff;
+            }
+            QProgressBar {
+                border: 1px solid #555;
+                border-radius: 5px;
+                background-color: #1e1e1e;
+            }
+            QProgressBar::chunk {
+                background-color: #2ecc71;
+                border-radius: 4px;
+            }
+            QTabWidget::pane {
+                border: 1px solid #555;
+                border-radius: 5px;
+                background: #333;
+            }
+            QTabBar::tab {
+                background: #444;
+                border: 1px solid #555;
+                border-bottom: none;
+                padding: 8px 15px;
+                margin-right: 2px;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+                color: #ffffff;
+            }
+            QTabBar::tab:selected {
+                background: #3498db;
+                color: white;
+            }
+            QTabBar::tab:hover {
+                background: #2980b9;
+                color: white;
+            }
+            QListWidget::item:selected {
+                background-color: #3498db;
+                color: white;
+                border-radius: 3px;
+            }
+            QCheckBox {
+                color: #ffffff;
+            }
+            QSpinBox {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: #ffffff;
+            }
+            """
+            
+            self.setStyleSheet(main_bg)
+            self.centralWidget().setStyleSheet(style)
+            
+        else:
+            # Light Theme
+            style = """
             QMainWindow {
                 background-color: #f5f7fa;
             }
@@ -853,27 +1006,33 @@ class NuitkaPackager(QMainWindow):
                 border: 1px solid #dcdde1;
                 border-radius: 8px;
                 margin-top: 1.5em;
+                background-color: white;
+                color: #2c3e50;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px;
                 background-color: transparent;
+                color: #2c3e50;
             }
             QTextEdit {
                 background-color: white;
                 border: 1px solid #dcdde1;
                 border-radius: 4px;
                 padding: 5px;
+                color: #2c3e50;
             }
             QLineEdit, QComboBox, QListWidget {
                 background-color: white;
                 border: 1px solid #dcdde1;
                 border-radius: 4px;
                 padding: 5px;
+                color: #2c3e50;
             }
             QLineEdit:disabled, QTextEdit:disabled {
                 background-color: #ecf0f1;
+                color: #7f8c8d;
             }
             QPushButton {
                 background-color: #3498db;
@@ -913,6 +1072,7 @@ class NuitkaPackager(QMainWindow):
                 margin-right: 2px;
                 border-top-left-radius: 5px;
                 border-top-right-radius: 5px;
+                color: #2c3e50;
             }
             QTabBar::tab:selected {
                 background: #3498db;
@@ -927,7 +1087,19 @@ class NuitkaPackager(QMainWindow):
                 color: white;
                 border-radius: 3px;
             }
-        """)
+            QCheckBox {
+                color: #2c3e50;
+            }
+            QSpinBox {
+                background-color: white;
+                border: 1px solid #dcdde1;
+                border-radius: 4px;
+                padding: 5px;
+                color: #2c3e50;
+            }
+            """
+            
+            self.setStyleSheet(style)
 
     def log_message(self, message):
         """Add message to log box"""
