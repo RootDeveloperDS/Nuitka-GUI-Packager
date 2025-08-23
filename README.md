@@ -3,7 +3,7 @@
 * [中文](README_ZH.md)
 * [English](README.md)
 
-![Interface Screenshot](docs/images/sc_enL.png)
+![Interface Screenshot](docs/images/sc_en.png)
 
 ![Interface Screenshot](docs/images/sc_enD.png)
 
