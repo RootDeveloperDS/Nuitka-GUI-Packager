@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QGroupBox, QFrame, QProgressBar, QSizePolicy, QTabWidget, QComboBox,
     QSpinBox, QListWidget, QListWidgetItem, QAbstractItemView, QSplitter, QToolButton
 )
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal, QSettings
 from PySide6.QtGui import QFont, QIcon, QTextCursor, QPalette, QColor
 
 # Set log format
@@ -78,13 +78,25 @@ class NuitkaPackager(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Nuitka Advanced Packager")
-        self.setGeometry(100, 100, 1000, 850)
+        self.setGeometry(300, 50, 1200, 850)
 
         # Set window icon
         self.setWindowIcon(QIcon("../icons/382_128x128.ico"))  # Replace with your icon path
 
+        # Initialize QSettings for persistent settings
+        self.settings = QSettings("MyCompanyOrName", "NuitkaPackager")  # Adjust names as needed
+
+        # Load theme setting, defaulting to Dark if not found
+        # The setting is loaded as a string ("true"/"false") and converted to boolean
+        self.is_dark_theme = self.settings.value("dark_theme", True, type=bool)
+
+        # Apply stylesheet directly on QMainWindow
+
         # Initialize UI
         self.init_ui()
+
+        self.plugins_info_label = None
+        self.flags_info_label = None
 
         # Initial state
         self.python_path = ""
@@ -110,12 +122,24 @@ class NuitkaPackager(QMainWindow):
         main_layout.setSpacing(15)
         main_layout.setContentsMargins(20, 20, 20, 20)
 
+        # Title row with theme toggle
+        title_layout = QHBoxLayout()
+        
         # Title
         title_label = QLabel("Nuitka Advanced Packager")
         title_label.setFont(QFont("Arial", 18, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet("color: #2c3e50; margin-bottom: 15px;")
-        main_layout.addWidget(title_label)
+        
+        # Theme toggle button
+        self.theme_toggle_btn = QPushButton("🌙 Dark Theme")
+        self.theme_toggle_btn.setFixedHeight(30)
+        self.theme_toggle_btn.setFixedWidth(120)
+        self.theme_toggle_btn.clicked.connect(self.toggle_theme)
+        
+        title_layout.addWidget(title_label)
+        title_layout.addWidget(self.theme_toggle_btn)
+        main_layout.addLayout(title_layout)
 
         # Use tabs to organize the interface
         main_tab = QTabWidget()
@@ -258,7 +282,7 @@ class NuitkaPackager(QMainWindow):
                               "- numpy: Support for NumPy scientific library\n"
                               "- multiprocessing: Support for multiprocessing module")
         plugins_info.setWordWrap(True)
-        plugins_info.setStyleSheet("background-color: #f8f9fa; padding: 8px; border-radius: 4px;")
+        self.plugins_info_label = plugins_info
         plugins_group_layout.addWidget(plugins_info)
 
         self.plugins_list = QListWidget()
@@ -304,7 +328,7 @@ class NuitkaPackager(QMainWindow):
                             "- unbuffered: Unbuffered output\n"
                             "- static_hashes: Use static hash values")
         flags_info.setWordWrap(True)
-        flags_info.setStyleSheet("background-color: #f8f9fa; padding: 8px; border-radius: 4px;")
+        self.flags_info_label = flags_info
         flags_group_layout.addWidget(flags_info)
 
         # Flag selector and buttons
@@ -417,48 +441,64 @@ class NuitkaPackager(QMainWindow):
         self.include_package_label = QLabel("Include Package:")
         self.include_package_input = QLineEdit()
         self.include_package_input.setPlaceholderText("Package name (e.g., mypackage)")
+        self.include_package_input.setMinimumWidth(300)  # Prevent compression
+        self.include_package_input.setMinimumHeight(20)  # Set minimum height
         self.include_package_input.textChanged.connect(self.update_command)
 
         # Include package data
         self.include_package_data_label = QLabel("Include Package Data:")
         self.include_package_data_input = QLineEdit()
         self.include_package_data_input.setPlaceholderText("Package:pattern (e.g., mypackage:*.txt)")
+        self.include_package_data_input.setMinimumWidth(300)  # Prevent compression
+        self.include_package_data_input.setMinimumHeight(20)  # Set minimum height
         self.include_package_data_input.textChanged.connect(self.update_command)
 
         # Include module
         self.include_module_label = QLabel("Include Module:")
         self.include_module_input = QLineEdit()
         self.include_module_input.setPlaceholderText("Module name (e.g., mymodule)")
+        self.include_module_input.setMinimumWidth(300)  # Prevent compression
+        self.include_module_input.setMinimumHeight(20)  # Set minimum height
         self.include_module_input.textChanged.connect(self.update_command)
 
         # Include data files
         self.include_data_label = QLabel("Include Data Files:")
         self.include_data_input = QLineEdit()
         self.include_data_input.setPlaceholderText("Source=Destination (e.g., data/*.json=./data/)")
+        self.include_data_input.setMinimumWidth(300)  # Prevent compression
+        self.include_data_input.setMinimumHeight(20)  # Set minimum height
         self.include_data_input.textChanged.connect(self.update_command)
 
         # Include data directory
         self.include_data_dir_label = QLabel("Include Data Directory:")
         self.include_data_dir_input = QLineEdit()
         self.include_data_dir_input.setPlaceholderText("Source=Destination (e.g., ./assets=assets/)")
+        self.include_data_dir_input.setMinimumWidth(300)  # Prevent compression
+        self.include_data_dir_input.setMinimumHeight(20)  # Set minimum height
         self.include_data_dir_input.textChanged.connect(self.update_command)
 
         # Exclude data files
         self.noinclude_data_label = QLabel("Exclude Data Files:")
         self.noinclude_data_input = QLineEdit()
         self.noinclude_data_input.setPlaceholderText("Pattern (e.g., *.tmp)")
+        self.noinclude_data_input.setMinimumWidth(300)  # Prevent compression
+        self.noinclude_data_input.setMinimumHeight(20)  # Set minimum height
         self.noinclude_data_input.textChanged.connect(self.update_command)
 
         # Onefile external data
         self.include_onefile_ext_label = QLabel("Onefile External Data:")
         self.include_onefile_ext_input = QLineEdit()
         self.include_onefile_ext_input.setPlaceholderText("Pattern (e.g., large_files/*)")
+        self.include_onefile_ext_input.setMinimumWidth(300)  # Prevent compression
+        self.include_onefile_ext_input.setMinimumHeight(20)  # Set minimum height
         self.include_onefile_ext_input.textChanged.connect(self.update_command)
 
         # Include raw directory
         self.include_raw_dir_label = QLabel("Include Raw Directory:")
         self.include_raw_dir_input = QLineEdit()
         self.include_raw_dir_input.setPlaceholderText("Directory path (e.g., ./raw_data)")
+        self.include_raw_dir_input.setMinimumWidth(300)  # Prevent compression
+        self.include_raw_dir_input.setMinimumHeight(20)  # Set minimum height
         self.include_raw_dir_input.textChanged.connect(self.update_command)
 
         # Add include options to layout
@@ -513,6 +553,9 @@ class NuitkaPackager(QMainWindow):
         self.onefile_grace_time_spin = QSpinBox()
         self.onefile_grace_time_spin.setRange(1000, 30000)
         self.onefile_grace_time_spin.setValue(5000)
+        self.onefile_grace_time_spin.setSingleStep(1000)  # Step by 1000ms
+        self.onefile_grace_time_spin.setSuffix(" ms")  # Add suffix for clarity
+        self.onefile_grace_time_spin.setMinimumWidth(120)  # Ensure minimum width
         self.onefile_grace_time_spin.valueChanged.connect(self.update_command)
 
         self.onefile_no_compression_check = QCheckBox("--onefile-no-compression (Disable compression)")
@@ -744,6 +787,8 @@ class NuitkaPackager(QMainWindow):
         self.progress_bar.setFixedHeight(10)
         main_layout.addWidget(self.progress_bar)
 
+
+
         # Button area
         button_layout = QHBoxLayout()
 
@@ -798,6 +843,22 @@ class NuitkaPackager(QMainWindow):
         self.status_bar = self.statusBar()
         self.status_bar.showMessage("Ready - Configure packaging options")
 
+    def toggle_theme(self):
+        """Toggle between dark and light themes"""
+        self.is_dark_theme = not self.is_dark_theme
+        # Update button text and icon
+        if self.is_dark_theme:
+            self.theme_toggle_btn.setText("🌙 Dark Theme")
+        else:
+            self.theme_toggle_btn.setText("☀️ Light Theme")
+        # Apply the new theme
+        self.set_style()
+        # Save the current theme setting persistently
+        self.settings.setValue("dark_theme", self.is_dark_theme)
+        # Log the theme change
+        theme_name = "Dark" if self.is_dark_theme else "Light"
+        self.log_message(f"🎨 Switched to {theme_name} theme and saved preference")
+
     def add_python_flag(self):
         """Add Python flag to list"""
         flag = self.flags_combo.currentText()
@@ -827,37 +888,263 @@ class NuitkaPackager(QMainWindow):
         return False
 
     def set_style(self):
-        """Set application styling"""
-        self.setStyleSheet("""
+        """Set application styling based on theme"""
+        # Store references to info labels if not already done
+        # These lines ensure the references exist. They are idempotent.
+        if not hasattr(self, 'plugins_info_label') or self.plugins_info_label is None:
+            # Find the plugins info label. It's inside the Plugins tab's group box.
+            # Assuming tab order: File Config(0), Common Options(1), Plugins(2), Python Flags(3)...
+            try:
+                plugins_tab = self.centralWidget().findChild(QWidget, "qt_tabwidget_stackedwidget").widget(2)
+                if plugins_tab:
+                    # Find the first QLabel which should be the info label
+                    self.plugins_info_label = plugins_tab.findChild(QLabel)
+            except Exception:
+                self.plugins_info_label = None  # Fallback if not found
+
+        if not hasattr(self, 'flags_info_label') or self.flags_info_label is None:
+            # Find the flags info label. It's inside the Python Flags tab's group box.
+            try:
+                flags_tab = self.centralWidget().findChild(QWidget, "qt_tabwidget_stackedwidget").widget(3)
+                if flags_tab:
+                    # Find the first QLabel which should be the info label
+                    self.flags_info_label = flags_tab.findChild(QLabel)
+            except Exception:
+                self.flags_info_label = None  # Fallback if not found
+
+        if self.is_dark_theme:
+            # Dark Theme
+            # Define main window background (including potential QStatusBar base)
+            main_bg = """
             QMainWindow {
-                background-color: #f5f7fa;
+                background: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 1,
+                    stop: 0 #0d0d0f,
+                    stop: 0.4 #1a1a1f,
+                    stop: 0.7 #0f1f2f,
+                    stop: 1 #0d0d0f
+                );
             }
+            """
+            # Define QStatusBar style for dark theme
+            # This will be applied directly to the QMainWindow
+            statusbar_style = """
+            QStatusBar {
+                background-color: #333; /* Dark background, matching QGroupBox */
+                color: #ffffff;        /* White text */
+                border-top: 1px solid #555; /* Optional: top separator line */
+            }
+            QStatusBar QLabel { /* Ensure labels inside status bar are white */
+                color: #ffffff;
+            }
+            """
+            # Define widget styles (WITHOUT QStatusBar rules)
+            widget_style = """
             QGroupBox {
                 font-weight: bold;
-                border: 1px solid #dcdde1;
+                border: 1px solid #555;
                 border-radius: 8px;
                 margin-top: 1.5em;
+                background-color: #333;
+                color: #ffffff;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 5px;
                 background-color: transparent;
+                color: #ffffff;
+            }
+            QTextEdit {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: #ffffff;
+            }
+            QLineEdit, QComboBox, QListWidget {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: #ffffff;
+            }
+            QLineEdit:disabled, QTextEdit:disabled {
+                background-color: #444;
+                color: #888;
+            }
+            QPushButton {
+                background-color: #3498db;
+                color: white;
+                padding: 6px 12px;
+                border: none;
+                border-radius: 4px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+            QPushButton:disabled {
+                background-color: #666;
+            }
+            QLabel {
+                color: #ffffff;
+            }
+            QProgressBar {
+                border: 1px solid #555;
+                border-radius: 5px;
+                background-color: #1e1e1e;
+            }
+            QProgressBar::chunk {
+                background-color: #2ecc71;
+                border-radius: 4px;
+            }
+            QTabWidget::pane {
+                border: 1px solid #555;
+                border-radius: 5px;
+                background: #333;
+            }
+            QTabBar::tab {
+                background: #444;
+                border: 1px solid #555;
+                border-bottom: none;
+                padding: 8px 15px;
+                margin-right: 2px;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+                color: #ffffff;
+            }
+            QTabBar::tab:selected {
+                background: #3498db;
+                color: white;
+            }
+            QTabBar::tab:hover {
+                background: #2980b9;
+                color: white;
+            }
+            QListWidget::item:selected {
+                background-color: #3498db;
+                color: white;
+                border-radius: 3px;
+            }
+            QCheckBox {
+                color: #ffffff;
+            }
+            QSpinBox {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: #ffffff;
+                min-height: 20px;
+            }
+            QSpinBox::up-button, QSpinBox::down-button {
+                background-color: #3498db;
+                border: 1px solid #555;
+                border-radius: 3px;
+                width: 18px;
+                height: 14px;
+                margin: 2px;
+                subcontrol-position: right;
+            }
+            QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+                background-color: #2980b9;
+            }
+            QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
+                background-color: #1c5980;
+            }
+            QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {
+                background-color: #666;
+                border-color: #444;
+            }
+            QSpinBox::up-arrow {
+                width: 6px;
+                height: 6px;
+                image: none;
+                border-left: 2px solid #ffffff;
+                border-bottom: 2px solid #ffffff;
+                transform: rotate(45deg);
+                margin: 3px;
+            }
+            QSpinBox::down-arrow {
+                width: 6px;
+                height: 6px;
+                image: none;
+                border-left: 2px solid #ffffff;
+                border-top: 2px solid #ffffff;
+                transform: rotate(45deg);
+                margin: 3px;
+            }
+            """  # <--- End of widget_style string (QStatusBar rules REMOVED)
+
+            # Apply specific styles for info labels in Dark Theme
+            if hasattr(self, 'plugins_info_label') and self.plugins_info_label:
+                self.plugins_info_label.setStyleSheet("""
+                    background-color: #2c2c2e;
+                    color: #ffffff;
+                    padding: 8px;
+                    border-radius: 4px;
+                """)
+            if hasattr(self, 'flags_info_label') and self.flags_info_label:
+                self.flags_info_label.setStyleSheet("""
+                    background-color: #2c2c2e;
+                    color: #ffffff;
+                    padding: 8px;
+                    border-radius: 4px;
+                """)
+
+            # Apply styles
+            # Apply main background AND status bar style to QMainWindow
+            self.setStyleSheet(main_bg + statusbar_style)
+            # Apply dark widget styles to central widget
+            self.centralWidget().setStyleSheet(widget_style)
+
+        else:
+            # Light Theme
+            # Simple background for QMainWindow
+            main_light_bg = "QMainWindow { background-color: #f5f7fa; }"
+            # Define QStatusBar style for light theme
+            # This will be applied directly to the QMainWindow
+            statusbar_style = """
+            QStatusBar {
+                background-color: #f5f7fa; /* Light background, matching main window */
+                color: #2c3e50;           /* Dark text */
+                border-top: 1px solid #dcdde1; /* Optional: top separator line */
+            }
+            """
+            # Define light widget styles (WITHOUT QStatusBar rules)
+            light_widget_style = """
+            QGroupBox {
+                font-weight: bold;
+                border: 1px solid #dcdde1;
+                border-radius: 8px;
+                margin-top: 1.5em;
+                background-color: white;
+                color: #2c3e50;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px;
+                background-color: transparent;
+                color: #2c3e50;
             }
             QTextEdit {
                 background-color: white;
                 border: 1px solid #dcdde1;
                 border-radius: 4px;
                 padding: 5px;
+                color: #2c3e50;
             }
             QLineEdit, QComboBox, QListWidget {
                 background-color: white;
                 border: 1px solid #dcdde1;
                 border-radius: 4px;
                 padding: 5px;
+                color: #2c3e50;
             }
             QLineEdit:disabled, QTextEdit:disabled {
                 background-color: #ecf0f1;
+                color: #7f8c8d;
             }
             QPushButton {
                 background-color: #3498db;
@@ -897,6 +1184,7 @@ class NuitkaPackager(QMainWindow):
                 margin-right: 2px;
                 border-top-left-radius: 5px;
                 border-top-right-radius: 5px;
+                color: #2c3e50;
             }
             QTabBar::tab:selected {
                 background: #3498db;
@@ -911,7 +1199,134 @@ class NuitkaPackager(QMainWindow):
                 color: white;
                 border-radius: 3px;
             }
-        """)
+            QCheckBox {
+                color: #2c3e50;
+            }
+            QSpinBox {
+                background-color: white;
+                border: 1px solid #dcdde1;
+                border-radius: 4px;
+                padding: 5px;
+                color: #2c3e50;
+                min-height: 20px;
+            }
+            QSpinBox::up-button, QSpinBox::down-button {
+                background-color: #3498db;
+                border: 1px solid #dcdde1;
+                border-radius: 3px;
+                width: 18px;
+                height: 14px;
+                margin: 2px;
+                subcontrol-position: right;
+            }
+            QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+                background-color: #2980b9;
+            }
+            QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
+                background-color: #1c5980;
+            }
+            QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {
+                background-color: #bdc3c7;
+                border-color: #95a5a6;
+            }
+            QSpinBox::up-arrow {
+                width: 6px;
+                height: 6px;
+                image: none;
+                border-left: 2px solid #ffffff;
+                border-bottom: 2px solid #ffffff;
+                transform: rotate(45deg);
+                margin: 3px;
+            }
+            QSpinBox::down-arrow {
+                width: 6px;
+                height: 6px;
+                image: none;
+                border-left: 2px solid #ffffff;
+                border-top: 2px solid #ffffff;
+                transform: rotate(45deg);
+                margin: 3px;
+            }
+            """  # <--- End of light_widget_style string (QStatusBar rules REMOVED)
+
+            # Apply specific styles for info labels in Light Theme
+            # Reset to a default or light-specific style if needed
+            if hasattr(self, 'plugins_info_label') and self.plugins_info_label:
+                # Re-apply original light style or a suitable one
+                self.plugins_info_label.setStyleSheet("""
+                    background-color: #f8f9fa;
+                    color: #2c3e50;
+                    padding: 8px;
+                    border-radius: 4px;
+                """)
+            if hasattr(self, 'flags_info_label') and self.flags_info_label:
+                # Re-apply original light style or a suitable one
+                self.flags_info_label.setStyleSheet("""
+                    background-color: #f8f9fa;
+                    color: #2c3e50;
+                    padding: 8px;
+                    border-radius: 4px;
+                """)
+
+            # Apply styles
+            # Apply light background AND status bar style to QMainWindow
+            self.setStyleSheet(main_light_bg + statusbar_style)
+            # Apply light widget styles to central widget
+            self.centralWidget().setStyleSheet(light_widget_style)
+
+    def get_messagebox_style(self):
+        """Generate stylesheet for QMessageBox based on current theme"""
+        if self.is_dark_theme:
+            # Dark theme stylesheet for QMessageBox
+            return """
+            QMessageBox {
+                background-color: #2c2c2e; /* Dark background */
+                color: #ffffff;           /* White text */
+            }
+            QMessageBox QLabel {
+                color: #ffffff; /* Ensure message text is white */
+            }
+            QMessageBox QPushButton {
+                background-color: #3498db; /* Blue button background */
+                color: white;             /* White button text */
+                border: 1px solid #555;
+                padding: 6px 12px;
+                border-radius: 4px;
+            }
+            QMessageBox QPushButton:hover {
+                background-color: #2980b9; /* Darker blue on hover */
+            }
+            QMessageBox QPushButton:pressed {
+                background-color: #1c5980; /* Even darker blue when pressed */
+            }
+            /* Style the icons if needed, though usually not necessary */
+            """
+        else:
+            # If needed, define a specific light theme style, or return empty string
+            # to use the default OS/application light theme.
+            # Often, the default light theme is fine, but you can customize it.
+            return """
+            QMessageBox {
+                background-color: #f5f7fa; /* Light background */
+                color: #2c3e50;           /* Dark text */
+            }
+            QMessageBox QLabel {
+                color: #2c3e50; /* Ensure message text is dark */
+            }
+            QMessageBox QPushButton {
+                background-color: #3498db; /* Blue button background */
+                color: white;             /* White button text */
+                border: 1px solid #dcdde1;
+                padding: 6px 12px;
+                border-radius: 4px;
+            }
+            QMessageBox QPushButton:hover {
+                background-color: #2980b9; /* Darker blue on hover */
+            }
+            QMessageBox QPushButton:pressed {
+                background-color: #1c5980; /* Even darker blue when pressed */
+            }
+            """
 
     def log_message(self, message):
         """Add message to log box"""
@@ -1030,7 +1445,8 @@ class NuitkaPackager(QMainWindow):
     def update_command(self):
         """Update packaging command based on user selections"""
         if not self.python_path or not self.main_file:
-            self.command_edit.setPlainText("1. Select Python interpreter and main file \n2. Configure options to update command")
+            self.command_edit.setPlainText(
+                "1. Select Python interpreter and main file \n2. Configure options to update command")
             return
 
         # Build base command
@@ -1358,12 +1774,14 @@ class NuitkaPackager(QMainWindow):
             self.log_message(f"Output directory: {self.output_dir}")
 
             # Ask to open output directory
-            reply = QMessageBox.question(
-                self,
-                "Packaging Success",
-                "Packaging completed! Open output directory?",
-                QMessageBox.Yes | QMessageBox.No
-            )
+            msg_box = QMessageBox(QMessageBox.Question,  # Explicitly set icon
+                                  "Packaging Success",
+                                  "Packaging completed! Open output directory?",
+                                  QMessageBox.Yes | QMessageBox.No,
+                                  self)  # Pass 'self' as parent
+            # Apply theme-specific stylesheet
+            msg_box.setStyleSheet(self.get_messagebox_style())
+            reply = msg_box.exec()  # Use exec() instead of static method
             if reply == QMessageBox.Yes:
                 os.startfile(self.output_dir)
         else:
@@ -1378,12 +1796,18 @@ class NuitkaPackager(QMainWindow):
     def closeEvent(self, event):
         """Handle window close event"""
         if self.package_thread and self.package_thread.isRunning():
-            reply = QMessageBox.question(
-                self,
+            # 使用实例化的方式创建 QMessageBox 以便应用样式
+            msg_box = QMessageBox(
+                QMessageBox.Question,  # 设置图标
                 "Packaging In Progress",
                 "Packaging is still running. Exit anyway?",
-                QMessageBox.Yes | QMessageBox.No
+                QMessageBox.Yes | QMessageBox.No,
+                self  # 设置父窗口
             )
+            # 应用与当前主题匹配的样式
+            msg_box.setStyleSheet(self.get_messagebox_style())
+            reply = msg_box.exec()  # 使用 exec() 显示对话框
+
             if reply == QMessageBox.Yes:
                 self.package_thread.stop()
                 event.accept()

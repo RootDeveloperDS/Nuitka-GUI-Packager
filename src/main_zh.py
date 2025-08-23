@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QGroupBox, QFrame, QProgressBar, QSizePolicy, QTabWidget, QComboBox,
     QSpinBox, QListWidget, QListWidgetItem, QAbstractItemView, QSplitter, QToolButton
 )
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal, QSettings
 from PySide6.QtGui import QFont, QIcon, QTextCursor, QPalette, QColor
 
 # 设置日志格式
@@ -83,6 +83,13 @@ class NuitkaPackager(QMainWindow):
         # 设置窗口图标
         self.setWindowIcon(QIcon("../icons/382_128x128.ico"))  # 替换为你的图标文件路径
 
+        # 初始化QSettings用于持久化设置
+        self.settings = QSettings("MyCompanyOrName", "NuitkaPackager")  # 根据需要调整名称
+
+        # 加载主题设置，默认为深色主题
+        # 设置以字符串形式加载("true"/"false")并转换为布尔值
+        self.is_dark_theme = self.settings.value("dark_theme", True, type=bool)
+
         # 初始化UI
         self.init_ui()
 
@@ -110,12 +117,24 @@ class NuitkaPackager(QMainWindow):
         main_layout.setSpacing(15)
         main_layout.setContentsMargins(20, 20, 20, 20)
 
+        # 标题行与主题切换按钮
+        title_layout = QHBoxLayout()
+        
         # 标题
         title_label = QLabel("Nuitka 高级打包工具")
         title_label.setFont(QFont("Arial", 18, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet("color: #2c3e50; margin-bottom: 15px;")
-        main_layout.addWidget(title_label)
+        
+        # 主题切换按钮
+        self.theme_toggle_btn = QPushButton("🌙 深色主题")
+        self.theme_toggle_btn.setFixedHeight(30)
+        self.theme_toggle_btn.setFixedWidth(120)
+        self.theme_toggle_btn.clicked.connect(self.toggle_theme)
+        
+        title_layout.addWidget(title_label)
+        title_layout.addWidget(self.theme_toggle_btn)
+        main_layout.addLayout(title_layout)
 
         # 使用选项卡组织整个界面
         main_tab = QTabWidget()
@@ -417,48 +436,64 @@ class NuitkaPackager(QMainWindow):
         self.include_package_label = QLabel("包含包:")
         self.include_package_input = QLineEdit()
         self.include_package_input.setPlaceholderText("包名 (e.g., mypackage)")
+        self.include_package_input.setMinimumWidth(300)  # 防止压缩
+        self.include_package_input.setMinimumHeight(25)  # 设置最小高度
         self.include_package_input.textChanged.connect(self.update_command)
 
         # 包含包数据
         self.include_package_data_label = QLabel("包含包数据:")
         self.include_package_data_input = QLineEdit()
         self.include_package_data_input.setPlaceholderText("包名:文件模式 (e.g., mypackage:*.txt)")
+        self.include_package_data_input.setMinimumWidth(300)  # 防止压缩
+        self.include_package_data_input.setMinimumHeight(25)  # 设置最小高度
         self.include_package_data_input.textChanged.connect(self.update_command)
 
         # 包含模块
         self.include_module_label = QLabel("包含模块:")
         self.include_module_input = QLineEdit()
         self.include_module_input.setPlaceholderText("模块名 (e.g., mymodule)")
+        self.include_module_input.setMinimumWidth(300)  # 防止压缩
+        self.include_module_input.setMinimumHeight(25)  # 设置最小高度
         self.include_module_input.textChanged.connect(self.update_command)
 
         # 包含数据文件
         self.include_data_label = QLabel("包含数据文件:")
         self.include_data_input = QLineEdit()
         self.include_data_input.setPlaceholderText("源路径=目标路径 (e.g., data/*.json=./data/)")
+        self.include_data_input.setMinimumWidth(300)  # 防止压缩
+        self.include_data_input.setMinimumHeight(25)  # 设置最小高度
         self.include_data_input.textChanged.connect(self.update_command)
 
         # 包含数据目录
         self.include_data_dir_label = QLabel("包含数据目录:")
         self.include_data_dir_input = QLineEdit()
         self.include_data_dir_input.setPlaceholderText("源目录=目标目录 (e.g., ./assets=assets/)")
+        self.include_data_dir_input.setMinimumWidth(300)  # 防止压缩
+        self.include_data_dir_input.setMinimumHeight(25)  # 设置最小高度
         self.include_data_dir_input.textChanged.connect(self.update_command)
 
         # 排除数据文件
         self.noinclude_data_label = QLabel("排除数据文件:")
         self.noinclude_data_input = QLineEdit()
         self.noinclude_data_input.setPlaceholderText("文件模式 (e.g., *.tmp)")
+        self.noinclude_data_input.setMinimumWidth(300)  # 防止压缩
+        self.noinclude_data_input.setMinimumHeight(25)  # 设置最小高度
         self.noinclude_data_input.textChanged.connect(self.update_command)
 
         # 单文件外部数据
         self.include_onefile_ext_label = QLabel("单文件外部数据:")
         self.include_onefile_ext_input = QLineEdit()
         self.include_onefile_ext_input.setPlaceholderText("文件模式 (e.g., large_files/*)")
+        self.include_onefile_ext_input.setMinimumWidth(300)  # 防止压缩
+        self.include_onefile_ext_input.setMinimumHeight(25)  # 设置最小高度
         self.include_onefile_ext_input.textChanged.connect(self.update_command)
 
         # 包含原始目录
         self.include_raw_dir_label = QLabel("包含原始目录:")
         self.include_raw_dir_input = QLineEdit()
         self.include_raw_dir_input.setPlaceholderText("目录路径 (e.g., ./raw_data)")
+        self.include_raw_dir_input.setMinimumWidth(300)  # 防止压缩
+        self.include_raw_dir_input.setMinimumHeight(25)  # 设置最小高度
         self.include_raw_dir_input.textChanged.connect(self.update_command)
 
         # 添加包含选项到布局
@@ -513,6 +548,9 @@ class NuitkaPackager(QMainWindow):
         self.onefile_grace_time_spin = QSpinBox()
         self.onefile_grace_time_spin.setRange(1000, 30000)
         self.onefile_grace_time_spin.setValue(5000)
+        self.onefile_grace_time_spin.setSingleStep(1000)  # Step by 1000ms
+        self.onefile_grace_time_spin.setSuffix(" ms")  # Add suffix for clarity
+        self.onefile_grace_time_spin.setMinimumWidth(120)  # Ensure minimum width
         self.onefile_grace_time_spin.valueChanged.connect(self.update_command)
 
         self.onefile_no_compression_check = QCheckBox("--onefile-no-compression (禁用压缩)")
@@ -828,90 +866,281 @@ class NuitkaPackager(QMainWindow):
 
     def set_style(self):
         """设置应用程序样式"""
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #f5f7fa;
-            }
-            QGroupBox {
-                font-weight: bold;
-                border: 1px solid #dcdde1;
-                border-radius: 8px;
-                margin-top: 1.5em;
-            }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 5px;
-                background-color: transparent;
-            }
-            QTextEdit {
-                background-color: white;
-                border: 1px solid #dcdde1;
-                border-radius: 4px;
-                padding: 5px;
-            }
-            QLineEdit, QComboBox, QListWidget {
-                background-color: white;
-                border: 1px solid #dcdde1;
-                border-radius: 4px;
-                padding: 5px;
-            }
-            QLineEdit:disabled, QTextEdit:disabled {
-                background-color: #ecf0f1;
-            }
-            QPushButton {
-                background-color: #3498db;
-                color: white;
-                padding: 6px 12px;
-                border: none;
-                border-radius: 4px;
-            }
-            QPushButton:hover {
-                background-color: #2980b9;
-            }
-            QPushButton:disabled {
-                background-color: #bdc3c7;
-            }
-            QLabel {
-                color: #2c3e50;
-            }
-            QProgressBar {
-                border: 1px solid #dcdde1;
-                border-radius: 5px;
-                background-color: white;
-            }
-            QProgressBar::chunk {
-                background-color: #2ecc71;
-                border-radius: 4px;
-            }
-            QTabWidget::pane {
-                border: 1px solid #dcdde1;
-                border-radius: 5px;
-                background: white;
-            }
-            QTabBar::tab {
-                background: #ecf0f1;
-                border: 1px solid #dcdde1;
-                border-bottom: none;
-                padding: 8px 15px;
-                margin-right: 2px;
-                border-top-left-radius: 5px;
-                border-top-right-radius: 5px;
-            }
-            QTabBar::tab:selected {
-                background: #3498db;
-                color: white;
-            }
-            QTabBar::tab:hover {
-                background: #2980b9;
-                color: white;
-            }
-            QListWidget::item:selected {
-                background-color: #3498db;
-                color: white;
-                border-radius: 3px;
-            }
-        """)
+        # 更新主题切换按钮文本
+        if hasattr(self, 'theme_toggle_btn'):
+            if self.is_dark_theme:
+                self.theme_toggle_btn.setText("🌙 深色主题")
+            else:
+                self.theme_toggle_btn.setText("☀️ 浅色主题")
+        
+        if self.is_dark_theme:
+            # 深色主题样式
+            self.setStyleSheet("""
+                QMainWindow {
+                    background-color: #1e1e1e;
+                }
+                QGroupBox {
+                    font-weight: bold;
+                    border: 1px solid #555;
+                    border-radius: 8px;
+                    margin-top: 1.5em;
+                    color: #ffffff;
+                }
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 5px;
+                    background-color: transparent;
+                    color: #ffffff;
+                }
+                QTextEdit {
+                    background-color: #2d2d2d;
+                    border: 1px solid #555;
+                    border-radius: 4px;
+                    padding: 5px;
+                    color: #ffffff;
+                }
+                QLineEdit, QComboBox, QListWidget {
+                    background-color: #2d2d2d;
+                    border: 1px solid #555;
+                    border-radius: 4px;
+                    padding: 5px;
+                    color: #ffffff;
+                }
+                QLineEdit:disabled, QTextEdit:disabled {
+                    background-color: #1a1a1a;
+                    color: #888;
+                }
+                QPushButton {
+                    background-color: #3498db;
+                    color: white;
+                    padding: 6px 12px;
+                    border: none;
+                    border-radius: 4px;
+                }
+                QPushButton:hover {
+                    background-color: #2980b9;
+                }
+                QPushButton:disabled {
+                    background-color: #666;
+                }
+                QLabel {
+                    color: #ffffff;
+                }
+                QProgressBar {
+                    border: 1px solid #555;
+                    border-radius: 5px;
+                    background-color: #2d2d2d;
+                }
+                QProgressBar::chunk {
+                    background-color: #2ecc71;
+                    border-radius: 4px;
+                }
+                QTabWidget::pane {
+                    border: 1px solid #555;
+                    border-radius: 5px;
+                    background: #2d2d2d;
+                }
+                QTabBar::tab {
+                    background: #1a1a1a;
+                    border: 1px solid #555;
+                    border-bottom: none;
+                    padding: 8px 15px;
+                    margin-right: 2px;
+                    border-top-left-radius: 5px;
+                    border-top-right-radius: 5px;
+                    color: #ffffff;
+                }
+                QTabBar::tab:selected {
+                    background: #3498db;
+                    color: white;
+                }
+                QTabBar::tab:hover {
+                    background: #2980b9;
+                    color: white;
+                }
+                QListWidget::item:selected {
+                    background-color: #3498db;
+                    color: white;
+                    border-radius: 3px;
+                }
+                QSpinBox {
+                    background-color: #2d2d2d;
+                    border: 1px solid #555;
+                    border-radius: 4px;
+                    padding: 5px;
+                    color: #ffffff;
+                    min-height: 20px;
+                }
+                QSpinBox::up-button, QSpinBox::down-button {
+                    background-color: #3498db;
+                    border: 1px solid #555;
+                    border-radius: 3px;
+                    width: 18px;
+                    height: 14px;
+                    margin: 2px;
+                    subcontrol-position: right;
+                }
+                QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+                    background-color: #2980b9;
+                }
+                QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
+                    background-color: #1c5980;
+                }
+                QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {
+                    background-color: #666;
+                    border-color: #444;
+                }
+                QSpinBox::up-arrow {
+                    width: 6px;
+                    height: 6px;
+                    image: none;
+                    border-left: 2px solid #ffffff;
+                    border-bottom: 2px solid #ffffff;
+                    transform: rotate(45deg);
+                    margin: 3px;
+                }
+                QSpinBox::down-arrow {
+                    width: 6px;
+                    height: 6px;
+                    image: none;
+                    border-left: 2px solid #ffffff;
+                    border-top: 2px solid #ffffff;
+                    transform: rotate(45deg);
+                    margin: 3px;
+                }
+            """)
+        else:
+            # 浅色主题样式
+            self.setStyleSheet("""
+                QMainWindow {
+                    background-color: #f5f7fa;
+                }
+                QGroupBox {
+                    font-weight: bold;
+                    border: 1px solid #dcdde1;
+                    border-radius: 8px;
+                    margin-top: 1.5em;
+                }
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 5px;
+                    background-color: transparent;
+                }
+                QTextEdit {
+                    background-color: white;
+                    border: 1px solid #dcdde1;
+                    border-radius: 4px;
+                    padding: 5px;
+                }
+                QLineEdit, QComboBox, QListWidget {
+                    background-color: white;
+                    border: 1px solid #dcdde1;
+                    border-radius: 4px;
+                    padding: 5px;
+                }
+                QLineEdit:disabled, QTextEdit:disabled {
+                    background-color: #ecf0f1;
+                }
+                QPushButton {
+                    background-color: #3498db;
+                    color: white;
+                    padding: 6px 12px;
+                    border: none;
+                    border-radius: 4px;
+                }
+                QPushButton:hover {
+                    background-color: #2980b9;
+                }
+                QPushButton:disabled {
+                    background-color: #bdc3c7;
+                }
+                QLabel {
+                    color: #2c3e50;
+                }
+                QProgressBar {
+                    border: 1px solid #dcdde1;
+                    border-radius: 5px;
+                    background-color: white;
+                }
+                QProgressBar::chunk {
+                    background-color: #2ecc71;
+                    border-radius: 4px;
+                }
+                QTabWidget::pane {
+                    border: 1px solid #dcdde1;
+                    border-radius: 5px;
+                    background: white;
+                }
+                QTabBar::tab {
+                    background: #ecf0f1;
+                    border: 1px solid #dcdde1;
+                    border-bottom: none;
+                    padding: 8px 15px;
+                    margin-right: 2px;
+                    border-top-left-radius: 5px;
+                    border-top-right-radius: 5px;
+                }
+                QTabBar::tab:selected {
+                    background: #3498db;
+                    color: white;
+                }
+                QTabBar::tab:hover {
+                    background: #2980b9;
+                    color: white;
+                }
+                QListWidget::item:selected {
+                    background-color: #3498db;
+                    color: white;
+                    border-radius: 3px;
+                }
+                QSpinBox {
+                    background-color: white;
+                    border: 1px solid #dcdde1;
+                    border-radius: 4px;
+                    padding: 5px;
+                    color: #2c3e50;
+                    min-height: 20px;
+                }
+                QSpinBox::up-button, QSpinBox::down-button {
+                    background-color: #3498db;
+                    border: 1px solid #dcdde1;
+                    border-radius: 3px;
+                    width: 18px;
+                    height: 14px;
+                    margin: 2px;
+                    subcontrol-position: right;
+                }
+                QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+                    background-color: #2980b9;
+                }
+                QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
+                    background-color: #1c5980;
+                }
+                QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {
+                    background-color: #bdc3c7;
+                    border-color: #95a5a6;
+                }
+                QSpinBox::up-arrow {
+                    width: 6px;
+                    height: 6px;
+                    image: none;
+                    border-left: 2px solid #ffffff;
+                    border-bottom: 2px solid #ffffff;
+                    transform: rotate(45deg);
+                    margin: 3px;
+                }
+                QSpinBox::down-arrow {
+                    width: 6px;
+                    height: 6px;
+                    image: none;
+                    border-left: 2px solid #ffffff;
+                    border-top: 2px solid #ffffff;
+                    transform: rotate(45deg);
+                    margin: 3px;
+                }
+            """)
 
     def log_message(self, message):
         """在日志框中添加消息"""
@@ -1026,6 +1255,22 @@ class NuitkaPackager(QMainWindow):
         if dir_path:
             self.output_dir = dir_path
             self.output_input.setText(dir_path)
+
+    def toggle_theme(self):
+        """在深色和浅色主题之间切换"""
+        self.is_dark_theme = not self.is_dark_theme
+        # 更新按钮文本和图标
+        if self.is_dark_theme:
+            self.theme_toggle_btn.setText("🌙 深色主题")
+        else:
+            self.theme_toggle_btn.setText("☀️ 浅色主题")
+        # 应用新主题
+        self.set_style()
+        # 持久保存当前主题设置
+        self.settings.setValue("dark_theme", self.is_dark_theme)
+        # 记录主题更改
+        theme_name = "深色" if self.is_dark_theme else "浅色"
+        self.log_message(f"🎨 切换到{theme_name}主题并保存偏好设置")
 
     def update_command(self):
         """根据用户选择更新打包命令"""
