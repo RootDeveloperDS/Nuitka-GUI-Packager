@@ -78,7 +78,7 @@ class NuitkaPackager(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Nuitka 高级打包工具")
-        self.setGeometry(100, 100, 1000, 850)
+        self.setGeometry(300, 50, 1200, 850)
 
         # 设置窗口图标
         self.setWindowIcon(QIcon("../icons/382_128x128.ico"))  # 替换为你的图标文件路径
@@ -90,8 +90,13 @@ class NuitkaPackager(QMainWindow):
         # 设置以字符串形式加载("true"/"false")并转换为布尔值
         self.is_dark_theme = self.settings.value("dark_theme", True, type=bool)
 
+        # 在QMainWindow上直接应用样式表
+
         # 初始化UI
         self.init_ui()
+
+        self.plugins_info_label = None
+        self.flags_info_label = None
 
         # 初始化状态
         self.python_path = ""
@@ -119,19 +124,19 @@ class NuitkaPackager(QMainWindow):
 
         # 标题行与主题切换按钮
         title_layout = QHBoxLayout()
-        
+
         # 标题
         title_label = QLabel("Nuitka 高级打包工具")
         title_label.setFont(QFont("Arial", 18, QFont.Bold))
         title_label.setAlignment(Qt.AlignCenter)
         title_label.setStyleSheet("color: #2c3e50; margin-bottom: 15px;")
-        
+
         # 主题切换按钮
         self.theme_toggle_btn = QPushButton("🌙 深色主题")
         self.theme_toggle_btn.setFixedHeight(30)
         self.theme_toggle_btn.setFixedWidth(120)
         self.theme_toggle_btn.clicked.connect(self.toggle_theme)
-        
+
         title_layout.addWidget(title_label)
         title_layout.addWidget(self.theme_toggle_btn)
         main_layout.addLayout(title_layout)
@@ -277,7 +282,7 @@ class NuitkaPackager(QMainWindow):
                               "- numpy: 支持NumPy科学计算库\n"
                               "- multiprocessing: 支持多进程模块")
         plugins_info.setWordWrap(True)
-        plugins_info.setStyleSheet("background-color: #f8f9fa; padding: 8px; border-radius: 4px;")
+        self.plugins_info_label = plugins_info
         plugins_group_layout.addWidget(plugins_info)
 
         self.plugins_list = QListWidget()
@@ -323,7 +328,7 @@ class NuitkaPackager(QMainWindow):
                             "- unbuffered: 禁用输出缓冲\n"
                             "- static_hashes: 使用静态哈希值")
         flags_info.setWordWrap(True)
-        flags_info.setStyleSheet("background-color: #f8f9fa; padding: 8px; border-radius: 4px;")
+        self.flags_info_label = flags_info
         flags_group_layout.addWidget(flags_info)
 
         # 标志选择和添加按钮
@@ -437,7 +442,7 @@ class NuitkaPackager(QMainWindow):
         self.include_package_input = QLineEdit()
         self.include_package_input.setPlaceholderText("包名 (e.g., mypackage)")
         self.include_package_input.setMinimumWidth(300)  # 防止压缩
-        self.include_package_input.setMinimumHeight(25)  # 设置最小高度
+        self.include_package_input.setMinimumHeight(20)  # 设置最小高度
         self.include_package_input.textChanged.connect(self.update_command)
 
         # 包含包数据
@@ -445,7 +450,7 @@ class NuitkaPackager(QMainWindow):
         self.include_package_data_input = QLineEdit()
         self.include_package_data_input.setPlaceholderText("包名:文件模式 (e.g., mypackage:*.txt)")
         self.include_package_data_input.setMinimumWidth(300)  # 防止压缩
-        self.include_package_data_input.setMinimumHeight(25)  # 设置最小高度
+        self.include_package_data_input.setMinimumHeight(20)  # 设置最小高度
         self.include_package_data_input.textChanged.connect(self.update_command)
 
         # 包含模块
@@ -453,7 +458,7 @@ class NuitkaPackager(QMainWindow):
         self.include_module_input = QLineEdit()
         self.include_module_input.setPlaceholderText("模块名 (e.g., mymodule)")
         self.include_module_input.setMinimumWidth(300)  # 防止压缩
-        self.include_module_input.setMinimumHeight(25)  # 设置最小高度
+        self.include_module_input.setMinimumHeight(20)  # 设置最小高度
         self.include_module_input.textChanged.connect(self.update_command)
 
         # 包含数据文件
@@ -461,7 +466,7 @@ class NuitkaPackager(QMainWindow):
         self.include_data_input = QLineEdit()
         self.include_data_input.setPlaceholderText("源路径=目标路径 (e.g., data/*.json=./data/)")
         self.include_data_input.setMinimumWidth(300)  # 防止压缩
-        self.include_data_input.setMinimumHeight(25)  # 设置最小高度
+        self.include_data_input.setMinimumHeight(20)  # 设置最小高度
         self.include_data_input.textChanged.connect(self.update_command)
 
         # 包含数据目录
@@ -469,7 +474,7 @@ class NuitkaPackager(QMainWindow):
         self.include_data_dir_input = QLineEdit()
         self.include_data_dir_input.setPlaceholderText("源目录=目标目录 (e.g., ./assets=assets/)")
         self.include_data_dir_input.setMinimumWidth(300)  # 防止压缩
-        self.include_data_dir_input.setMinimumHeight(25)  # 设置最小高度
+        self.include_data_dir_input.setMinimumHeight(20)  # 设置最小高度
         self.include_data_dir_input.textChanged.connect(self.update_command)
 
         # 排除数据文件
@@ -477,7 +482,7 @@ class NuitkaPackager(QMainWindow):
         self.noinclude_data_input = QLineEdit()
         self.noinclude_data_input.setPlaceholderText("文件模式 (e.g., *.tmp)")
         self.noinclude_data_input.setMinimumWidth(300)  # 防止压缩
-        self.noinclude_data_input.setMinimumHeight(25)  # 设置最小高度
+        self.noinclude_data_input.setMinimumHeight(20)  # 设置最小高度
         self.noinclude_data_input.textChanged.connect(self.update_command)
 
         # 单文件外部数据
@@ -485,7 +490,7 @@ class NuitkaPackager(QMainWindow):
         self.include_onefile_ext_input = QLineEdit()
         self.include_onefile_ext_input.setPlaceholderText("文件模式 (e.g., large_files/*)")
         self.include_onefile_ext_input.setMinimumWidth(300)  # 防止压缩
-        self.include_onefile_ext_input.setMinimumHeight(25)  # 设置最小高度
+        self.include_onefile_ext_input.setMinimumHeight(20)  # 设置最小高度
         self.include_onefile_ext_input.textChanged.connect(self.update_command)
 
         # 包含原始目录
@@ -493,7 +498,7 @@ class NuitkaPackager(QMainWindow):
         self.include_raw_dir_input = QLineEdit()
         self.include_raw_dir_input.setPlaceholderText("目录路径 (e.g., ./raw_data)")
         self.include_raw_dir_input.setMinimumWidth(300)  # 防止压缩
-        self.include_raw_dir_input.setMinimumHeight(25)  # 设置最小高度
+        self.include_raw_dir_input.setMinimumHeight(20)  # 设置最小高度
         self.include_raw_dir_input.textChanged.connect(self.update_command)
 
         # 添加包含选项到布局
@@ -836,6 +841,22 @@ class NuitkaPackager(QMainWindow):
         self.status_bar = self.statusBar()
         self.status_bar.showMessage("就绪 - 请配置打包选项")
 
+    def toggle_theme(self):
+        """在深色和浅色主题之间切换"""
+        self.is_dark_theme = not self.is_dark_theme
+        # 更新按钮文本和图标
+        if self.is_dark_theme:
+            self.theme_toggle_btn.setText("🌙 深色主题")
+        else:
+            self.theme_toggle_btn.setText("☀️ 浅色主题")
+        # 应用新主题
+        self.set_style()
+        # 持久保存当前主题设置
+        self.settings.setValue("dark_theme", self.is_dark_theme)
+        # 记录主题更改
+        theme_name = "深色" if self.is_dark_theme else "浅色"
+        self.log_message(f"🎨 切换到{theme_name}主题并保存偏好设置")
+
     def add_python_flag(self):
         """添加Python标志到列表"""
         flag = self.flags_combo.currentText()
@@ -865,282 +886,445 @@ class NuitkaPackager(QMainWindow):
         return False
 
     def set_style(self):
-        """设置应用程序样式"""
-        # 更新主题切换按钮文本
-        if hasattr(self, 'theme_toggle_btn'):
-            if self.is_dark_theme:
-                self.theme_toggle_btn.setText("🌙 深色主题")
-            else:
-                self.theme_toggle_btn.setText("☀️ 浅色主题")
-        
+        """设置应用程序样式基于主题"""
+        # 存储对信息标签的引用（如果尚未完成）
+        # 这些行确保引用存在。它们是幂等的。
+        if not hasattr(self, 'plugins_info_label') or self.plugins_info_label is None:
+            # 查找插件信息标签。它在插件选项卡的组框内。
+            # 假设选项卡顺序：文件配置(0), 常用选项(1), 插件(2), Python标志(3)...
+            try:
+                plugins_tab = self.centralWidget().findChild(QWidget, "qt_tabwidget_stackedwidget").widget(2)
+                if plugins_tab:
+                    # 查找第一个QLabel，应该是信息标签
+                    self.plugins_info_label = plugins_tab.findChild(QLabel)
+            except Exception:
+                self.plugins_info_label = None  # 如果找不到则回退
+
+        if not hasattr(self, 'flags_info_label') or self.flags_info_label is None:
+            # 查找标志信息标签。它在Python标志选项卡的组框内。
+            try:
+                flags_tab = self.centralWidget().findChild(QWidget, "qt_tabwidget_stackedwidget").widget(3)
+                if flags_tab:
+                    # 查找第一个QLabel，应该是信息标签
+                    self.flags_info_label = flags_tab.findChild(QLabel)
+            except Exception:
+                self.flags_info_label = None  # 如果找不到则回退
+
         if self.is_dark_theme:
-            # 深色主题样式
-            self.setStyleSheet("""
-                QMainWindow {
-                    background-color: #1e1e1e;
-                }
-                QGroupBox {
-                    font-weight: bold;
-                    border: 1px solid #555;
-                    border-radius: 8px;
-                    margin-top: 1.5em;
+            # 深色主题
+            # 定义主窗口背景（包括潜在的QStatusBar基础）
+            main_bg = """
+            QMainWindow {
+                background: qlineargradient(
+                    x1: 0, y1: 0, x2: 1, y2: 1,
+                    stop: 0 #0d0d0f,
+                    stop: 0.4 #1a1a1f,
+                    stop: 0.7 #0f1f2f,
+                    stop: 1 #0d0d0f
+                );
+            }
+            """
+            # 为深色主题定义QStatusBar样式
+            # 这将直接应用于QMainWindow
+            statusbar_style = """
+            QStatusBar {
+                background-color: #333; /* 深色背景，匹配QGroupBox */
+                color: #ffffff;        /* 白色文本 */
+                border-top: 1px solid #555; /* 可选：顶部分隔线 */
+            }
+            QStatusBar QLabel { /* 确保状态栏内的标签为白色 */
+                color: #ffffff;
+            }
+            """
+            # 定义小部件样式（不含QStatusBar规则）
+            widget_style = """
+            QGroupBox {
+                font-weight: bold;
+                border: 1px solid #555;
+                border-radius: 8px;
+                margin-top: 1.5em;
+                background-color: #333;
+                color: #ffffff;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px;
+                background-color: transparent;
+                color: #ffffff;
+            }
+            QTextEdit {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: #ffffff;
+            }
+            QLineEdit, QComboBox, QListWidget {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: #ffffff;
+            }
+            QLineEdit:disabled, QTextEdit:disabled {
+                background-color: #444;
+                color: #888;
+            }
+            QPushButton {
+                background-color: #3498db;
+                color: white;
+                padding: 6px 12px;
+                border: none;
+                border-radius: 4px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+            QPushButton:disabled {
+                background-color: #666;
+            }
+            QLabel {
+                color: #ffffff;
+            }
+            QProgressBar {
+                border: 1px solid #555;
+                border-radius: 5px;
+                background-color: #1e1e1e;
+            }
+            QProgressBar::chunk {
+                background-color: #2ecc71;
+                border-radius: 4px;
+            }
+            QTabWidget::pane {
+                border: 1px solid #555;
+                border-radius: 5px;
+                background: #333;
+            }
+            QTabBar::tab {
+                background: #444;
+                border: 1px solid #555;
+                border-bottom: none;
+                padding: 8px 15px;
+                margin-right: 2px;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+                color: #ffffff;
+            }
+            QTabBar::tab:selected {
+                background: #3498db;
+                color: white;
+            }
+            QTabBar::tab:hover {
+                background: #2980b9;
+                color: white;
+            }
+            QListWidget::item:selected {
+                background-color: #3498db;
+                color: white;
+                border-radius: 3px;
+            }
+            QCheckBox {
+                color: #ffffff;
+            }
+            QSpinBox {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                border-radius: 4px;
+                padding: 5px;
+                color: #ffffff;
+                min-height: 20px;
+            }
+            QSpinBox::up-button, QSpinBox::down-button {
+                background-color: #3498db;
+                border: 1px solid #555;
+                border-radius: 3px;
+                width: 18px;
+                height: 14px;
+                margin: 2px;
+                subcontrol-position: right;
+            }
+            QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+                background-color: #2980b9;
+            }
+            QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
+                background-color: #1c5980;
+            }
+            QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {
+                background-color: #666;
+                border-color: #444;
+            }
+            QSpinBox::up-arrow {
+                width: 6px;
+                height: 6px;
+                image: none;
+                border-left: 2px solid #ffffff;
+                border-bottom: 2px solid #ffffff;
+                transform: rotate(45deg);
+                margin: 3px;
+            }
+            QSpinBox::down-arrow {
+                width: 6px;
+                height: 6px;
+                image: none;
+                border-left: 2px solid #ffffff;
+                border-top: 2px solid #ffffff;
+                transform: rotate(45deg);
+                margin: 3px;
+            }
+            """  # <--- widget_style字符串结束（QStatusBar规则已移除）
+
+            # 为深色主题中的信息标签应用特定样式
+            if hasattr(self, 'plugins_info_label') and self.plugins_info_label:
+                self.plugins_info_label.setStyleSheet("""
+                    background-color: #2c2c2e;
                     color: #ffffff;
-                }
-                QGroupBox::title {
-                    subcontrol-origin: margin;
-                    left: 10px;
-                    padding: 0 5px;
-                    background-color: transparent;
-                    color: #ffffff;
-                }
-                QTextEdit {
-                    background-color: #2d2d2d;
-                    border: 1px solid #555;
+                    padding: 8px;
                     border-radius: 4px;
-                    padding: 5px;
+                """)
+            if hasattr(self, 'flags_info_label') and self.flags_info_label:
+                self.flags_info_label.setStyleSheet("""
+                    background-color: #2c2c2e;
                     color: #ffffff;
-                }
-                QLineEdit, QComboBox, QListWidget {
-                    background-color: #2d2d2d;
-                    border: 1px solid #555;
+                    padding: 8px;
                     border-radius: 4px;
-                    padding: 5px;
-                    color: #ffffff;
-                }
-                QLineEdit:disabled, QTextEdit:disabled {
-                    background-color: #1a1a1a;
-                    color: #888;
-                }
-                QPushButton {
-                    background-color: #3498db;
-                    color: white;
-                    padding: 6px 12px;
-                    border: none;
-                    border-radius: 4px;
-                }
-                QPushButton:hover {
-                    background-color: #2980b9;
-                }
-                QPushButton:disabled {
-                    background-color: #666;
-                }
-                QLabel {
-                    color: #ffffff;
-                }
-                QProgressBar {
-                    border: 1px solid #555;
-                    border-radius: 5px;
-                    background-color: #2d2d2d;
-                }
-                QProgressBar::chunk {
-                    background-color: #2ecc71;
-                    border-radius: 4px;
-                }
-                QTabWidget::pane {
-                    border: 1px solid #555;
-                    border-radius: 5px;
-                    background: #2d2d2d;
-                }
-                QTabBar::tab {
-                    background: #1a1a1a;
-                    border: 1px solid #555;
-                    border-bottom: none;
-                    padding: 8px 15px;
-                    margin-right: 2px;
-                    border-top-left-radius: 5px;
-                    border-top-right-radius: 5px;
-                    color: #ffffff;
-                }
-                QTabBar::tab:selected {
-                    background: #3498db;
-                    color: white;
-                }
-                QTabBar::tab:hover {
-                    background: #2980b9;
-                    color: white;
-                }
-                QListWidget::item:selected {
-                    background-color: #3498db;
-                    color: white;
-                    border-radius: 3px;
-                }
-                QSpinBox {
-                    background-color: #2d2d2d;
-                    border: 1px solid #555;
-                    border-radius: 4px;
-                    padding: 5px;
-                    color: #ffffff;
-                    min-height: 20px;
-                }
-                QSpinBox::up-button, QSpinBox::down-button {
-                    background-color: #3498db;
-                    border: 1px solid #555;
-                    border-radius: 3px;
-                    width: 18px;
-                    height: 14px;
-                    margin: 2px;
-                    subcontrol-position: right;
-                }
-                QSpinBox::up-button:hover, QSpinBox::down-button:hover {
-                    background-color: #2980b9;
-                }
-                QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
-                    background-color: #1c5980;
-                }
-                QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {
-                    background-color: #666;
-                    border-color: #444;
-                }
-                QSpinBox::up-arrow {
-                    width: 6px;
-                    height: 6px;
-                    image: none;
-                    border-left: 2px solid #ffffff;
-                    border-bottom: 2px solid #ffffff;
-                    transform: rotate(45deg);
-                    margin: 3px;
-                }
-                QSpinBox::down-arrow {
-                    width: 6px;
-                    height: 6px;
-                    image: none;
-                    border-left: 2px solid #ffffff;
-                    border-top: 2px solid #ffffff;
-                    transform: rotate(45deg);
-                    margin: 3px;
-                }
-            """)
+                """)
+
+            # 应用样式
+            # 将主背景和状态栏样式应用于QMainWindow
+            self.setStyleSheet(main_bg + statusbar_style)
+            # 将深色小部件样式应用于中央小部件
+            self.centralWidget().setStyleSheet(widget_style)
+
         else:
-            # 浅色主题样式
-            self.setStyleSheet("""
-                QMainWindow {
-                    background-color: #f5f7fa;
-                }
-                QGroupBox {
-                    font-weight: bold;
-                    border: 1px solid #dcdde1;
-                    border-radius: 8px;
-                    margin-top: 1.5em;
-                }
-                QGroupBox::title {
-                    subcontrol-origin: margin;
-                    left: 10px;
-                    padding: 0 5px;
-                    background-color: transparent;
-                }
-                QTextEdit {
-                    background-color: white;
-                    border: 1px solid #dcdde1;
-                    border-radius: 4px;
-                    padding: 5px;
-                }
-                QLineEdit, QComboBox, QListWidget {
-                    background-color: white;
-                    border: 1px solid #dcdde1;
-                    border-radius: 4px;
-                    padding: 5px;
-                }
-                QLineEdit:disabled, QTextEdit:disabled {
-                    background-color: #ecf0f1;
-                }
-                QPushButton {
-                    background-color: #3498db;
-                    color: white;
-                    padding: 6px 12px;
-                    border: none;
-                    border-radius: 4px;
-                }
-                QPushButton:hover {
-                    background-color: #2980b9;
-                }
-                QPushButton:disabled {
-                    background-color: #bdc3c7;
-                }
-                QLabel {
+            # 浅色主题
+            # QMainWindow的简单背景
+            main_light_bg = "QMainWindow { background-color: #f5f7fa; }"
+            # 为浅色主题定义QStatusBar样式
+            # 这将直接应用于QMainWindow
+            statusbar_style = """
+            QStatusBar {
+                background-color: #f5f7fa; /* 浅色背景，匹配主窗口 */
+                color: #2c3e50;           /* 深色文本 */
+                border-top: 1px solid #dcdde1; /* 可选：顶部分隔线 */
+            }
+            """
+            # 定义浅色小部件样式（不含QStatusBar规则）
+            light_widget_style = """
+            QGroupBox {
+                font-weight: bold;
+                border: 1px solid #dcdde1;
+                border-radius: 8px;
+                margin-top: 1.5em;
+                background-color: white;
+                color: #2c3e50;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px;
+                background-color: transparent;
+                color: #2c3e50;
+            }
+            QTextEdit {
+                background-color: white;
+                border: 1px solid #dcdde1;
+                border-radius: 4px;
+                padding: 5px;
+                color: #2c3e50;
+            }
+            QLineEdit, QComboBox, QListWidget {
+                background-color: white;
+                border: 1px solid #dcdde1;
+                border-radius: 4px;
+                padding: 5px;
+                color: #2c3e50;
+            }
+            QLineEdit:disabled, QTextEdit:disabled {
+                background-color: #ecf0f1;
+                color: #7f8c8d;
+            }
+            QPushButton {
+                background-color: #3498db;
+                color: white;
+                padding: 6px 12px;
+                border: none;
+                border-radius: 4px;
+            }
+            QPushButton:hover {
+                background-color: #2980b9;
+            }
+            QPushButton:disabled {
+                background-color: #bdc3c7;
+            }
+            QLabel {
+                color: #2c3e50;
+            }
+            QProgressBar {
+                border: 1px solid #dcdde1;
+                border-radius: 5px;
+                background-color: white;
+            }
+            QProgressBar::chunk {
+                background-color: #2ecc71;
+                border-radius: 4px;
+            }
+            QTabWidget::pane {
+                border: 1px solid #dcdde1;
+                border-radius: 5px;
+                background: white;
+            }
+            QTabBar::tab {
+                background: #ecf0f1;
+                border: 1px solid #dcdde1;
+                border-bottom: none;
+                padding: 8px 15px;
+                margin-right: 2px;
+                border-top-left-radius: 5px;
+                border-top-right-radius: 5px;
+                color: #2c3e50;
+            }
+            QTabBar::tab:selected {
+                background: #3498db;
+                color: white;
+            }
+            QTabBar::tab:hover {
+                background: #2980b9;
+                color: white;
+            }
+            QListWidget::item:selected {
+                background-color: #3498db;
+                color: white;
+                border-radius: 3px;
+            }
+            QCheckBox {
+                color: #2c3e50;
+            }
+            QSpinBox {
+                background-color: white;
+                border: 1px solid #dcdde1;
+                border-radius: 4px;
+                padding: 5px;
+                color: #2c3e50;
+                min-height: 20px;
+            }
+            QSpinBox::up-button, QSpinBox::down-button {
+                background-color: #3498db;
+                border: 1px solid #dcdde1;
+                border-radius: 3px;
+                width: 18px;
+                height: 14px;
+                margin: 2px;
+                subcontrol-position: right;
+            }
+            QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+                background-color: #2980b9;
+            }
+            QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
+                background-color: #1c5980;
+            }
+            QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {
+                background-color: #bdc3c7;
+                border-color: #95a5a6;
+            }
+            QSpinBox::up-arrow {
+                width: 6px;
+                height: 6px;
+                image: none;
+                border-left: 2px solid #ffffff;
+                border-bottom: 2px solid #ffffff;
+                transform: rotate(45deg);
+                margin: 3px;
+            }
+            QSpinBox::down-arrow {
+                width: 6px;
+                height: 6px;
+                image: none;
+                border-left: 2px solid #ffffff;
+                border-top: 2px solid #ffffff;
+                transform: rotate(45deg);
+                margin: 3px;
+            }
+            """  # <--- light_widget_style字符串结束（QStatusBar规则已移除）
+
+            # 为浅色主题中的信息标签应用特定样式
+            # 如果需要，重置为默认或浅色特定样式
+            if hasattr(self, 'plugins_info_label') and self.plugins_info_label:
+                # 重新应用原始浅色样式或合适的样式
+                self.plugins_info_label.setStyleSheet("""
+                    background-color: #f8f9fa;
                     color: #2c3e50;
-                }
-                QProgressBar {
-                    border: 1px solid #dcdde1;
-                    border-radius: 5px;
-                    background-color: white;
-                }
-                QProgressBar::chunk {
-                    background-color: #2ecc71;
+                    padding: 8px;
                     border-radius: 4px;
-                }
-                QTabWidget::pane {
-                    border: 1px solid #dcdde1;
-                    border-radius: 5px;
-                    background: white;
-                }
-                QTabBar::tab {
-                    background: #ecf0f1;
-                    border: 1px solid #dcdde1;
-                    border-bottom: none;
-                    padding: 8px 15px;
-                    margin-right: 2px;
-                    border-top-left-radius: 5px;
-                    border-top-right-radius: 5px;
-                }
-                QTabBar::tab:selected {
-                    background: #3498db;
-                    color: white;
-                }
-                QTabBar::tab:hover {
-                    background: #2980b9;
-                    color: white;
-                }
-                QListWidget::item:selected {
-                    background-color: #3498db;
-                    color: white;
-                    border-radius: 3px;
-                }
-                QSpinBox {
-                    background-color: white;
-                    border: 1px solid #dcdde1;
-                    border-radius: 4px;
-                    padding: 5px;
+                """)
+            if hasattr(self, 'flags_info_label') and self.flags_info_label:
+                # 重新应用原始浅色样式或合适的样式
+                self.flags_info_label.setStyleSheet("""
+                    background-color: #f8f9fa;
                     color: #2c3e50;
-                    min-height: 20px;
-                }
-                QSpinBox::up-button, QSpinBox::down-button {
-                    background-color: #3498db;
-                    border: 1px solid #dcdde1;
-                    border-radius: 3px;
-                    width: 18px;
-                    height: 14px;
-                    margin: 2px;
-                    subcontrol-position: right;
-                }
-                QSpinBox::up-button:hover, QSpinBox::down-button:hover {
-                    background-color: #2980b9;
-                }
-                QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
-                    background-color: #1c5980;
-                }
-                QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {
-                    background-color: #bdc3c7;
-                    border-color: #95a5a6;
-                }
-                QSpinBox::up-arrow {
-                    width: 6px;
-                    height: 6px;
-                    image: none;
-                    border-left: 2px solid #ffffff;
-                    border-bottom: 2px solid #ffffff;
-                    transform: rotate(45deg);
-                    margin: 3px;
-                }
-                QSpinBox::down-arrow {
-                    width: 6px;
-                    height: 6px;
-                    image: none;
-                    border-left: 2px solid #ffffff;
-                    border-top: 2px solid #ffffff;
-                    transform: rotate(45deg);
-                    margin: 3px;
-                }
-            """)
+                    padding: 8px;
+                    border-radius: 4px;
+                """)
+
+            # 应用样式
+            # 将浅色背景和状态栏样式应用于QMainWindow
+            self.setStyleSheet(main_light_bg + statusbar_style)
+            # 将浅色小部件样式应用于中央小部件
+            self.centralWidget().setStyleSheet(light_widget_style)
+
+    def get_messagebox_style(self):
+        """根据当前主题生成QMessageBox的样式表"""
+        if self.is_dark_theme:
+            # QMessageBox的深色主题样式表
+            return """
+            QMessageBox {
+                background-color: #2c2c2e; /* 深色背景 */
+                color: #ffffff;           /* 白色文本 */
+            }
+            QMessageBox QLabel {
+                color: #ffffff; /* 确保消息文本为白色 */
+            }
+            QMessageBox QPushButton {
+                background-color: #3498db; /* 蓝色按钮背景 */
+                color: white;             /* 白色按钮文本 */
+                border: 1px solid #555;
+                padding: 6px 12px;
+                border-radius: 4px;
+            }
+            QMessageBox QPushButton:hover {
+                background-color: #2980b9; /* 悬停时更深的蓝色 */
+            }
+            QMessageBox QPushButton:pressed {
+                background-color: #1c5980; /* 按下时更深的蓝色 */
+            }
+            /* 如果需要，设置图标样式，但通常不需要 */
+            """
+        else:
+            # 如果需要，定义特定的浅色主题样式，或返回空字符串
+            # 使用默认的操作系统/应用程序浅色主题。
+            # 通常，默认的浅色主题就可以了，但你可以自定义它。
+            return """
+            QMessageBox {
+                background-color: #f5f7fa; /* 浅色背景 */
+                color: #2c3e50;           /* 深色文本 */
+            }
+            QMessageBox QLabel {
+                color: #2c3e50; /* 确保消息文本为深色 */
+            }
+            QMessageBox QPushButton {
+                background-color: #3498db; /* 蓝色按钮背景 */
+                color: white;             /* 白色按钮文本 */
+                border: 1px solid #dcdde1;
+                padding: 6px 12px;
+                border-radius: 4px;
+            }
+            QMessageBox QPushButton:hover {
+                background-color: #2980b9; /* 悬停时更深的蓝色 */
+            }
+            QMessageBox QPushButton:pressed {
+                background-color: #1c5980; /* 按下时更深的蓝色 */
+            }
+            """
 
     def log_message(self, message):
         """在日志框中添加消息"""
@@ -1255,22 +1439,6 @@ class NuitkaPackager(QMainWindow):
         if dir_path:
             self.output_dir = dir_path
             self.output_input.setText(dir_path)
-
-    def toggle_theme(self):
-        """在深色和浅色主题之间切换"""
-        self.is_dark_theme = not self.is_dark_theme
-        # 更新按钮文本和图标
-        if self.is_dark_theme:
-            self.theme_toggle_btn.setText("🌙 深色主题")
-        else:
-            self.theme_toggle_btn.setText("☀️ 浅色主题")
-        # 应用新主题
-        self.set_style()
-        # 持久保存当前主题设置
-        self.settings.setValue("dark_theme", self.is_dark_theme)
-        # 记录主题更改
-        theme_name = "深色" if self.is_dark_theme else "浅色"
-        self.log_message(f"🎨 切换到{theme_name}主题并保存偏好设置")
 
     def update_command(self):
         """根据用户选择更新打包命令"""
@@ -1412,12 +1580,6 @@ class NuitkaPackager(QMainWindow):
                 logging.debug(f"原始输入: {dd}")
                 logging.debug(f"解析后源路径: {src_path}")
                 logging.debug(f"解析后目标路径: {dest_path}")
-
-        # 包含数据目录
-        if self.include_data_dir_input.text():
-            data_dirs = [dd.strip() for dd in self.include_data_dir_input.text().split(',') if dd.strip()]
-            for dd in data_dirs:
-                command.append(f"--include-data-dir={dd}")
 
         # 排除数据文件
         if self.noinclude_data_input.text():
@@ -1611,12 +1773,14 @@ class NuitkaPackager(QMainWindow):
             self.log_message(f"输出目录: {self.output_dir}")
 
             # 询问是否打开输出目录
-            reply = QMessageBox.question(
-                self,
-                "打包成功",
-                "打包已完成！是否打开输出目录？",
-                QMessageBox.Yes | QMessageBox.No
-            )
+            msg_box = QMessageBox(QMessageBox.Question,  # 显式设置图标
+                                  "打包成功",
+                                  "打包已完成！是否打开输出目录？",
+                                  QMessageBox.Yes | QMessageBox.No,
+                                  self)  # 传递'self'作为父级
+            # 应用主题特定的样式表
+            msg_box.setStyleSheet(self.get_messagebox_style())
+            reply = msg_box.exec()  # 使用exec()而不是静态方法
             if reply == QMessageBox.Yes:
                 os.startfile(self.output_dir)
         else:
@@ -1629,14 +1793,20 @@ class NuitkaPackager(QMainWindow):
         self.progress_bar.setValue(0)
 
     def closeEvent(self, event):
-        """关闭窗口事件处理"""
+        """处理窗口关闭事件"""
         if self.package_thread and self.package_thread.isRunning():
-            reply = QMessageBox.question(
-                self,
+            # 使用实例化的方式创建 QMessageBox 以便应用样式
+            msg_box = QMessageBox(
+                QMessageBox.Question,  # 设置图标
                 "打包正在进行",
                 "打包过程仍在运行，确定要退出吗？",
-                QMessageBox.Yes | QMessageBox.No
+                QMessageBox.Yes | QMessageBox.No,
+                self  # 设置父窗口
             )
+            # 应用与当前主题匹配的样式
+            msg_box.setStyleSheet(self.get_messagebox_style())
+            reply = msg_box.exec()  # 使用 exec() 显示对话框
+
             if reply == QMessageBox.Yes:
                 self.package_thread.stop()
                 event.accept()
